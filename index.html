@@ -4,6 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Fresco Cup — FIFA Tournament Season 2</title>
+  <link rel="icon" type="image/x-icon" href="assets/toloba-favicon.png">
+  <link rel="apple-touch-icon" href="assets/favicon.ico">
   <style>
     :root{
       --bg:#080604;
@@ -33,49 +35,144 @@
     }
     .wrap{max-width:1400px;margin:0 auto;padding:22px}
 
-    /* Hero Banner */
+    /* Hero Banner - Glamorous FIFA Style */
     .hero{
       position:relative;overflow:hidden;
-      border-radius:20px;margin-bottom:18px;
-      border:1px solid rgba(212,168,67,.22);
-      background:linear-gradient(135deg, #0D0A04, #151005);
-      padding:28px 30px;
-      display:flex;align-items:center;gap:24px;
+      border-radius:24px;margin-bottom:20px;
+      border:2px solid rgba(212,168,67,.4);
+      background:linear-gradient(135deg, #0A0802 0%, #1A1508 25%, #0D0A04 50%, #1C1609 75%, #0A0802 100%);
+      padding:32px 36px;
+      display:flex;align-items:center;gap:28px;
+      box-shadow: 
+        0 0 30px rgba(212,168,67,.3),
+        inset 0 1px 0 rgba(212,168,67,.2),
+        0 8px 32px rgba(0,0,0,.4);
     }
     .hero::before{
-      content:'';position:absolute;top:-50%;left:-10%;
-      width:60%;height:200%;
-      background:radial-gradient(ellipse, rgba(212,168,67,.08), transparent 70%);
-      pointer-events:none;
+      content:'';position:absolute;top:-60%;left:-20%;
+      width:80%;height:220%;
+      background:radial-gradient(ellipse, rgba(212,168,67,.12), rgba(212,168,67,.05) 40%, transparent 70%);
+      pointer-events:none;animation:heroGlow 4s ease-in-out infinite alternate;
     }
+    .hero::after{
+      content:'';position:absolute;top:0;left:0;right:0;bottom:0;
+      background:linear-gradient(45deg, transparent 45%, rgba(212,168,67,.1) 50%, transparent 55%);
+      pointer-events:none;animation:heroShimmer 3s ease-in-out infinite;
+    }
+    @keyframes heroGlow {
+      0% { transform: rotate(0deg) scale(1); opacity: 0.8; }
+      100% { transform: rotate(5deg) scale(1.1); opacity: 1; }
+    }
+    @keyframes heroShimmer {
+      0%, 100% { transform: translateX(-100%); }
+      50% { transform: translateX(100%); }
+    }
+    
+    .hero-decorative-left, .hero-decorative-right {
+      position:absolute;top:50%;transform:translateY(-50%);
+      width:80px;height:80px;opacity:0.15;
+      animation:float 6s ease-in-out infinite;
+    }
+    .hero-decorative-left { left:20px; animation-delay:-2s; }
+    .hero-decorative-right { right:20px; animation-delay:-4s; }
+    @keyframes float {
+      0%, 100% { transform:translateY(-50%) rotate(0deg); }
+      50% { transform:translateY(-60%) rotate(180deg); }
+    }
+    
+    .hero-stars {
+      position:absolute;width:100%;height:100%;top:0;left:0;
+      pointer-events:none;overflow:hidden;
+    }
+    .hero-star {
+      position:absolute;
+      width:4px;height:4px;
+      background:radial-gradient(circle, #F5DCA0, #D4A843);
+      border-radius:50%;
+      animation:twinkle 2s ease-in-out infinite;
+    }
+    .hero-star:nth-child(1) { top:20%; left:15%; animation-delay:0s; }
+    .hero-star:nth-child(2) { top:30%; left:85%; animation-delay:0.5s; }
+    .hero-star:nth-child(3) { top:70%; left:10%; animation-delay:1s; }
+    .hero-star:nth-child(4) { top:60%; left:90%; animation-delay:1.5s; }
+    .hero-star:nth-child(5) { top:15%; left:75%; animation-delay:0.7s; }
+    .hero-star:nth-child(6) { top:80%; left:25%; animation-delay:1.2s; }
+    @keyframes twinkle {
+      0%, 100% { opacity:0.3; transform:scale(1); }
+      50% { opacity:1; transform:scale(1.5); }
+    }
+    
     .hero-logo{
-      width:72px;height:72px;border-radius:18px;flex-shrink:0;
-      background:linear-gradient(135deg, #D4A843, #8B6914);
-      box-shadow:0 8px 32px rgba(212,168,67,.30);
+      width:84px;height:84px;border-radius:22px;flex-shrink:0;
+      background:linear-gradient(135deg, #F5DCA0 0%, #D4A843 30%, #B8952F 70%, #8B6914 100%);
+      box-shadow:
+        0 0 40px rgba(212,168,67,.5),
+        0 8px 32px rgba(212,168,67,.3),
+        inset 0 2px 4px rgba(255,255,255,.1),
+        inset 0 -2px 4px rgba(0,0,0,.2);
       display:flex;align-items:center;justify-content:center;
-      font-size:28px;font-weight:900;color:#080604;
+      font-size:32px;font-weight:900;color:#080604;
       letter-spacing:-1px;
+      overflow:hidden;
+      position:relative;
+      animation:logoGlow 3s ease-in-out infinite alternate;
     }
-    .hero-info{flex:1;min-width:0}
+    .hero-logo::before {
+      content:'';position:absolute;top:-50%;left:-50%;
+      width:200%;height:200%;
+      background:conic-gradient(from 0deg, transparent, rgba(255,255,255,.3), transparent);
+      animation:logoRotate 4s linear infinite;
+    }
+    .hero-logo img {
+      width:100%;height:100%;object-fit:contain;
+      border-radius:22px;position:relative;z-index:2;
+    }
+    @keyframes logoGlow {
+      0% { box-shadow: 0 0 40px rgba(212,168,67,.5), 0 8px 32px rgba(212,168,67,.3), inset 0 2px 4px rgba(255,255,255,.1), inset 0 -2px 4px rgba(0,0,0,.2); }
+      100% { box-shadow: 0 0 60px rgba(212,168,67,.8), 0 12px 48px rgba(212,168,67,.5), inset 0 2px 4px rgba(255,255,255,.2), inset 0 -2px 4px rgba(0,0,0,.1); }
+    }
+    @keyframes logoRotate {
+      0% { transform:rotate(0deg); }
+      100% { transform:rotate(360deg); }
+    }
+    
+    .hero-info{flex:1;min-width:0;position:relative;z-index:3}
     .hero-info h1{
-      margin:0;font-size:22px;font-weight:800;letter-spacing:.5px;
-      background:linear-gradient(135deg, #F5DCA0, #D4A843, #A07C28);
+      margin:0;font-size:26px;font-weight:900;letter-spacing:.8px;
+      background:linear-gradient(135deg, #FFFFFF 0%, #F5DCA0 25%, #D4A843 50%, #F5DCA0 75%, #FFFFFF 100%);
+      background-size:200% 200%;
       -webkit-background-clip:text;-webkit-text-fill-color:transparent;
       background-clip:text;
+      animation:titleShimmer 3s ease-in-out infinite;
+      position:relative;
     }
+    @keyframes titleShimmer {
+      0%, 100% { background-position:0% 50%; }
+      50% { background-position:100% 50%; }
+    }
+    
     .hero-info .hero-sub{
-      margin:4px 0 0;font-size:13px;color:var(--muted);letter-spacing:.3px;
+      margin:6px 0 0;font-size:14px;color:rgba(255,255,255,.85);letter-spacing:.4px;
+      text-shadow:0 2px 8px rgba(0,0,0,.8);
+      font-weight:500;
     }
-    .hero-info .hero-sub b{color:var(--accent)}
+    .hero-info .hero-sub b{
+      color:var(--accent);
+      text-shadow:0 0 10px rgba(212,168,67,.6);
+      font-weight:700;
+    }
     .hero-venue{
-      margin:8px 0 0;font-size:11.5px;color:rgba(255,255,255,.40);
-      letter-spacing:.3px;
+      margin:10px 0 0;font-size:12.5px;color:rgba(255,255,255,.65);
+      letter-spacing:.4px;
+      text-shadow:0 1px 4px rgba(0,0,0,.6);
     }
     .hero-badge{
-      flex-shrink:0;padding:8px 16px;border-radius:999px;
-      background:linear-gradient(135deg, rgba(212,168,67,.15), rgba(212,168,67,.05));
-      border:1px solid rgba(212,168,67,.25);
-      font-size:11px;color:var(--accent);letter-spacing:.8px;text-transform:uppercase;font-weight:700;
+      flex-shrink:0;padding:12px 20px;border-radius:30px;
+      background:linear-gradient(135deg, rgba(212,168,67,.20) 0%, rgba(212,168,67,.12) 50%, rgba(212,168,67,.20) 100%);
+      border:1px solid rgba(212,168,67,.3);
+      box-shadow:0 0 12px rgba(212,168,67,.2);
+      font-size:12px;color:#F5DCA0;letter-spacing:1px;text-transform:uppercase;font-weight:800;
+      text-shadow:0 1px 2px rgba(0,0,0,.5);
     }
     .topbar{
       display:flex;align-items:center;justify-content:space-between;gap:14px;
@@ -159,8 +256,129 @@
       border:1px solid rgba(212,168,67,.22);
       color:var(--accent);
       min-width:68px;text-align:center;
+      transition:all 0.3s ease;
     }
     .score.dim{opacity:.45}
+
+    /* Individual player scores */
+    .individual-score {
+      font-variant-numeric: tabular-nums;
+      font-weight:800;font-size:24px;
+      padding:4px 12px;border-radius:12px;
+      background:rgba(212,168,67,.10);
+      border:1px solid rgba(212,168,67,.22);
+      color:var(--accent);
+      min-width:48px;text-align:center;
+      transition:all 0.3s ease;
+    }
+
+    /* Score Change Animations - Enhanced for more prominence */
+    .score.score-updated,
+    .individual-score.score-updated {
+      animation: scoreUpdate 1.2s ease-out;
+    }
+    
+    @keyframes scoreUpdate {
+      0% {
+        transform: scale(1);
+        background: rgba(212,168,67,.10);
+        border-color: rgba(212,168,67,.22);
+        box-shadow: none;
+      }
+      20% {
+        transform: scale(1.3);
+        background: rgba(212,168,67,.35);
+        border-color: rgba(212,168,67,.60);
+        box-shadow: 0 0 30px rgba(212,168,67,.6);
+      }
+      40% {
+        transform: scale(1.25);
+        background: rgba(212,168,67,.30);
+        border-color: rgba(212,168,67,.50);
+        box-shadow: 0 0 25px rgba(212,168,67,.5);
+      }
+      60% {
+        transform: scale(1.15);
+        background: rgba(212,168,67,.25);
+        border-color: rgba(212,168,67,.40);
+        box-shadow: 0 0 20px rgba(212,168,67,.4);
+      }
+      100% {
+        transform: scale(1);
+        background: rgba(212,168,67,.10);
+        border-color: rgba(212,168,67,.22);
+        box-shadow: none;
+      }
+    }
+
+    /* Player Name Emphasis Animation */
+    .name.name-scored {
+      animation: playerScored 1.5s ease-out;
+    }
+    
+    @keyframes playerScored {
+      0% {
+        transform: scale(1);
+        color: var(--text);
+        text-shadow: none;
+      }
+      15% {
+        transform: scale(1.2);
+        color: var(--accent);
+        text-shadow: 0 0 15px rgba(212,168,67,.8);
+      }
+      30% {
+        transform: scale(1.15);
+        color: #F5DCA0;
+        text-shadow: 0 0 20px rgba(212,168,67,.9);
+      }
+      50% {
+        transform: scale(1.1);
+        color: var(--accent);
+        text-shadow: 0 0 15px rgba(212,168,67,.7);
+      }
+      70% {
+        transform: scale(1.05);
+        color: #F5DCA0;
+        text-shadow: 0 0 10px rgba(212,168,67,.5);
+      }
+      100% {
+        transform: scale(1);
+        color: var(--text);
+        text-shadow: none;
+      }
+    }
+
+    /* Enhanced Match box pulse animation */
+    .match.match-updated {
+      animation: matchPulse 1.2s ease-out;
+    }
+
+    @keyframes matchPulse {
+      0% {
+        border-color: rgba(212,168,67,.12);
+        background: rgba(0,0,0,.30);
+        transform: scale(1);
+      }
+      25% {
+        border-color: rgba(212,168,67,.50);
+        background: rgba(212,168,67,.15);
+        box-shadow: 0 8px 40px rgba(212,168,67,.4);
+        transform: scale(1.02);
+      }
+      50% {
+        border-color: rgba(212,168,67,.40);
+        background: rgba(212,168,67,.12);
+        box-shadow: 0 6px 35px rgba(212,168,67,.3);
+        transform: scale(1.01);
+      }
+      100% {
+        border-color: rgba(212,168,67,.12);
+        background: rgba(0,0,0,.30);
+        box-shadow: none;
+        transform: scale(1);
+      }
+    }
     table{
       width:100%;border-collapse:separate;border-spacing:0 8px;
       font-size:13px;
@@ -183,8 +401,19 @@
     .rank{width:54px}
     .num{font-variant-numeric: tabular-nums}
     .qual{
-      background:rgba(53,208,127,.08) !important;
-      border:1px solid rgba(53,208,127,.18) !important;
+      background:rgba(53,208,127,.10) !important;
+      border:1px solid rgba(53,208,127,.24) !important;
+      box-shadow:0 0 8px rgba(53,208,127,.15);
+    }
+    .secure{
+      background:rgba(53,208,127,.22) !important;
+      border:1px solid rgba(53,208,127,.55) !important;
+      box-shadow:0 0 18px rgba(53,208,127,.45);
+    }
+    .secure td{font-weight:900;color:#F2FFF7}
+    .standings-scroll{
+      max-height:360px;
+      overflow:auto;
     }
     .cutline{
       margin-top:8px;padding:10px 12px;border-radius:14px;
@@ -257,12 +486,16 @@
     /* Enhanced Mobile Responsiveness */
     @media(max-width:640px){
       .wrap{padding:12px}
-      .hero{flex-direction:column;text-align:center;padding:18px 14px;border-radius:14px}
-      .hero-logo{width:56px;height:56px;font-size:22px;border-radius:14px}
-      .hero-info h1{font-size:18px}
-      .hero-info .hero-sub{font-size:12px}
-      .hero-venue{font-size:10.5px}
-      .hero-badge{align-self:center;font-size:10px;padding:6px 12px}
+      .hero{flex-direction:column;text-align:center;padding:24px 16px;border-radius:18px;gap:20px;}
+      .hero-decorative-left, .hero-decorative-right { width:60px; height:60px; }
+      .hero-decorative-left { left:10px; }
+      .hero-decorative-right { right:10px; }
+      .hero-logo{width:68px;height:68px;font-size:26px;border-radius:18px}
+      .hero-logo img{border-radius:18px}
+      .hero-info h1{font-size:20px;letter-spacing:.6px}
+      .hero-info .hero-sub{font-size:13px}
+      .hero-venue{font-size:11px}
+      .hero-badge{align-self:center;font-size:10px;padding:8px 16px}
       .topbar{
         flex-direction:column;align-items:stretch;
         padding:12px;border-radius:14px;gap:10px
@@ -286,6 +519,7 @@
       .row{padding:6px 8px;border-radius:10px}
       .name{font-size:13px}
       .score{font-size:16px;padding:3px 8px;border-radius:10px;min-width:58px}
+      .individual-score{font-size:20px;padding:3px 10px;border-radius:10px;min-width:42px}
       table{font-size:12px}
       thead th{font-size:11px;padding:0 6px}
       tbody td{padding:8px 6px}
@@ -318,13 +552,51 @@
   <div class="wrap">
     <!-- Hero Banner -->
     <div class="hero">
-      <div class="hero-logo">FC</div>
+      <!-- Decorative SVG Elements -->
+      <div class="hero-decorative-left">
+        <svg viewBox="0 0 80 80" fill="none">
+          <path d="M40 10L46 28H66L50 40L56 58L40 46L24 58L30 40L14 28H34L40 10Z" fill="url(#goldGradient)" opacity="0.3"/>
+          <defs>
+            <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#F5DCA0"/>
+              <stop offset="50%" style="stop-color:#D4A843"/>
+              <stop offset="100%" style="stop-color:#B8952F"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <div class="hero-decorative-right">
+        <svg viewBox="0 0 80 80" fill="none">
+          <circle cx="40" cy="40" r="25" fill="none" stroke="url(#goldGradient2)" stroke-width="2" opacity="0.4"/>
+          <path d="M25 40C25 31.7 31.7 25 40 25M55 40C55 48.3 48.3 55 40 55M40 15V25M40 55V65M15 40H25M55 40H65" stroke="url(#goldGradient2)" stroke-width="1.5" opacity="0.3"/>
+          <defs>
+            <linearGradient id="goldGradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#D4A843"/>
+              <stop offset="100%" style="stop-color:#F5DCA0"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      
+      <!-- Animated Stars -->
+      <div class="hero-stars">
+        <div class="hero-star"></div>
+        <div class="hero-star"></div>
+        <div class="hero-star"></div>
+        <div class="hero-star"></div>
+        <div class="hero-star"></div>
+        <div class="hero-star"></div>
+      </div>
+      
+      <div class="hero-logo">
+        <img src="assets/sponsors/fresco.jpg" alt="Fresco Realty" />
+      </div>
       <div class="hero-info">
         <h1>Fresco Cup — FIFA Tournament</h1>
         <div class="hero-sub"><b>Season 2</b> &nbsp;|&nbsp; PS5 &nbsp;|&nbsp; Toloba Taiyebi Mohallah, Pune</div>
         <div class="hero-venue">Jamali Hall &bull; Taiyebi Masjid Burhani Colony &bull; Presented by Fresco Realty</div>
       </div>
-      <div class="hero-badge">Live Dashboard</div>
+      <div class="hero-badge"><span>Live Dashboard</span></div>
     </div>
 
     <div class="topbar">
@@ -340,10 +612,6 @@
         <div class="pill">
           <label for="roundSelect">Round</label>
           <select id="roundSelect"></select>
-        </div>
-        <div class="pill">
-          <label for="cutoffInput">Qualify Top</label>
-          <input id="cutoffInput" type="number" min="1" max="28" value="14" style="width:84px"/>
         </div>
         <div class="status" id="status">Status: <b>Loading…</b></div>
       </div>
@@ -368,13 +636,12 @@
           <span>Live Standings</span>
           <span class="subnote">Top 14 shown</span>
         </h2>
-        <div style="overflow:auto">
+        <div class="standings-scroll">
           <table>
             <thead>
               <tr>
                 <th class="rank">#</th>
                 <th>Player</th>
-                <th class="num">GD</th>
                 <th class="num">Pts</th>
               </tr>
             </thead>
@@ -447,7 +714,6 @@
 
   const elStatus = document.getElementById("status");
   const elRoundSelect = document.getElementById("roundSelect");
-  const elCutoff = document.getElementById("cutoffInput");
 
   const elNow = document.getElementById("nowPlaying");
   const elStand = document.getElementById("standingsBody");
@@ -458,6 +724,10 @@
   const elSF = document.getElementById("sfCol");
   const elFinal = document.getElementById("finalCol");
   const elLast = document.getElementById("lastUpdated");
+
+  // Store previous scores for animation detection
+  let previousScores = new Map();
+  let previousIndividualScores = new Map(); // Track individual player scores
 
   function normKey(k){
     return String(k || "").trim().toLowerCase();
@@ -523,22 +793,34 @@
     return rounds[rounds.length-1] || 1;
   }
 
-  function cardMatch({setup, round, a, b, ga, gb}){
-    const scoreText = (ga!=="" && gb!=="") ? `${ga} - ${gb}` : "—";
-    const scoreClass = (ga!=="" && gb!=="") ? "score" : "score dim";
+  function cardMatch({setup, round, a, b, ga, gb, isScoreUpdated, playerAScored, playerBScored}){
+    // Individual scores for each player
+    const scoreA = ga !== "" ? ga : "—";
+    const scoreB = gb !== "" ? gb : "—";
+    
+    const matchAnimClass = isScoreUpdated ? "match-updated" : "";
+    
+    // Only animate the name of the player who actually scored
+    const playerAAnimClass = playerAScored ? "name-scored" : "";
+    const playerBAnimClass = playerBScored ? "name-scored" : "";
+    
+    // Animation for individual scores
+    const scoreAAnimClass = playerAScored ? "score-updated" : "";
+    const scoreBAnimClass = playerBScored ? "score-updated" : "";
+    
     return `
-      <div class="match">
+      <div class="match ${matchAnimClass}" data-setup="${setup}">
         <div class="match-top">
           <div class="setup">${setup}</div>
           <div class="roundtag">Round ${round}</div>
         </div>
         <div class="row">
-          <div class="name">${escapeHtml(a || "TBD")}</div>
-          <div class="${scoreClass}">${escapeHtml(scoreText)}</div>
+          <div class="name ${playerAAnimClass}">${escapeHtml(a || "TBD")}</div>
+          <div class="individual-score ${scoreAAnimClass}">${scoreA}</div>
         </div>
         <div class="row">
-          <div class="name">${escapeHtml(b || "TBD")}</div>
-          <div class="tiny"> </div>
+          <div class="name ${playerBAnimClass}">${escapeHtml(b || "TBD")}</div>
+          <div class="individual-score ${scoreBAnimClass}">${scoreB}</div>
         </div>
       </div>
     `;
@@ -548,52 +830,101 @@
     const setups = ["Setup 1","Setup 2","Setup 3","Setup 4"];
     const roundMatches = matches.filter(m => String(get(m,"Round")) === String(round));
 
-    const html = setups.map(s=>{
+    const html = setups.map((s, index)=>{
       const m = roundMatches.find(x => normKey(get(x,"Setup")) === normKey(s));
       if (!m){
-        return cardMatch({setup:s, round, a:"—", b:"—", ga:"", gb:""});
+        return cardMatch({setup:s, round, a:"—", b:"—", ga:"", gb:"", isScoreUpdated: false, playerAScored: false, playerBScored: false});
       }
+
+      const ga = safeStr(get(m,"Goals A"));
+      const gb = safeStr(get(m,"Goals B"));
+      
+      const currentScore = (ga !== "" && gb !== "") ? `${ga}-${gb}` : "";
+      const setupKey = `${round}-${s}`;
+      const previousScore = previousScores.get(setupKey) || "";
+      
+      // Track individual scores to determine who scored
+      const currentGa = ga !== "" ? parseInt(ga, 10) || 0 : 0;
+      const currentGb = gb !== "" ? parseInt(gb, 10) || 0 : 0;
+      const prevScores = previousIndividualScores.get(setupKey) || {ga: 0, gb: 0};
+      const previousGa = prevScores.ga;
+      const previousGb = prevScores.gb;
+      
+      // Check if score changed (and it's not the first load)
+      const isScoreUpdated = currentScore !== "" && previousScore !== "" && currentScore !== previousScore;
+      
+      // Determine who actually scored (whose score increased)
+      const playerAScored = isScoreUpdated && currentGa > previousGa;
+      const playerBScored = isScoreUpdated && currentGb > previousGb;
+      
+      // Update stored scores
+      previousScores.set(setupKey, currentScore);
+      previousIndividualScores.set(setupKey, {ga: currentGa, gb: currentGb});
+
       return cardMatch({
         setup: s,
         round,
         a: safeStr(get(m,"Player A")) || safeStr(get(m,"PlayerA")) || safeStr(get(m,"Player A ")),
         b: safeStr(get(m,"Player B")) || safeStr(get(m,"PlayerB")) || safeStr(get(m,"Player B ")),
-        ga: safeStr(get(m,"Goals A")),
-        gb: safeStr(get(m,"Goals B"))
+        ga: ga,
+        gb: gb,
+        isScoreUpdated: isScoreUpdated,
+        playerAScored: playerAScored,
+        playerBScored: playerBScored
       });
     }).join("");
 
     elNow.innerHTML = html;
+    
+    // Clean up animation classes after animation completes
+    setTimeout(() => {
+      const animatedElements = elNow.querySelectorAll('.score-updated, .match-updated, .name-scored');
+      animatedElements.forEach(el => {
+        el.classList.remove('score-updated', 'match-updated', 'name-scored');
+      });
+    }, 1500); // Match the longest animation duration
   }
 
-  function renderStandings(rows, cutoff){
-    // Expect Rank / Player / GD / Pts
+  function renderStandings(rows){
+    const cutoffFromRows = rows
+      .map(r => parseInt(get(r,"Playoff cutoff (Top N)") || get(r,"Playoff cutoff") || "", 10))
+      .find(v => Number.isFinite(v) && v > 0);
+    const cutoff = cutoffFromRows || 14;
+
+    // Expect Rank / Player / Pts, but handle odd headers from sheet response
     const cleaned = rows
-      .map(r => ({
-        rank: parseInt(get(r,"Rank") || get(r,"rank") || 9999, 10),
-        player: safeStr(get(r,"Player")),
-        gd: get(r,"GD"),
-        pts: get(r,"Pts") || get(r,"PTS") || get(r,"Points") || get(r,"points")
-      }))
+      .map(r => {
+        const numericKey = Object.keys(r || {}).find(k => k.trim() !== "" && !Number.isNaN(Number(k)));
+        const rankFromNumeric = numericKey ? parseInt(numericKey, 10) : NaN;
+        const rankFromField = parseInt(
+          get(r,"Rank") || get(r,"rank") || get(r,"Playoff cutoff (Top N)") || "",
+          10
+        );
+        return {
+          rank: Number.isFinite(rankFromField)
+            ? rankFromField
+            : (Number.isFinite(rankFromNumeric) ? rankFromNumeric : 9999),
+          player: safeStr(get(r,"Player") || get(r,"Name") || (numericKey ? r[numericKey] : "")),
+          pts: get(r,"Pts") || get(r,"PTS") || get(r,"Points") || get(r,"points") || get(r,"")
+        };
+      })
       .filter(x => x.player)
       .sort((a,b)=>a.rank-b.rank);
 
-    const showN = Math.min(cutoff, cleaned.length);
-    const top = cleaned.slice(0, showN);
-
-    elStand.innerHTML = top.map(x => {
-      const isQual = x.rank <= cutoff;
+    elStand.innerHTML = cleaned.map(x => {
+      const isSecure = x.rank <= 2;
+      const isQual = x.rank <= cutoff && !isSecure;
+      const rowClass = isSecure ? "secure" : (isQual ? "qual" : "");
       return `
-        <tr class="${isQual ? 'qual' : ''}">
+        <tr class="${rowClass}">
           <td class="rank num">${x.rank}</td>
           <td>${escapeHtml(x.player)}</td>
-          <td class="num">${escapeHtml(String(x.gd ?? ""))}</td>
           <td class="num"><b>${escapeHtml(String(x.pts ?? ""))}</b></td>
         </tr>
       `;
     }).join("");
 
-    elCutline.textContent = `Qualification: Top ${cutoff}. Seeds 1–2 protected • Seeds 3–14 play-in (6 matches).`;
+    elCutline.textContent = `Qualification: Top ${cutoff}. Seeds 1–2 protected • Seeds 3–${cutoff} play-in.`;
   }
 
   function tile(matchId, a, b, score, winner){
@@ -675,10 +1006,9 @@
       }
 
       const round = parseInt(elRoundSelect.value || rounds[0] || 1, 10);
-      const cutoff = parseInt(elCutoff.value || 14, 10);
 
       renderNowPlaying(matches, round);
-      renderStandings(standings, cutoff);
+      renderStandings(standings);
       renderPlayoffs(playoffs);
 
       const now = new Date();
@@ -692,7 +1022,6 @@
 
   // refresh on changes
   elRoundSelect.addEventListener("change", refresh);
-  elCutoff.addEventListener("change", refresh);
 
   refresh();
   setInterval(refresh, REFRESH_MS);
