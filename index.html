@@ -682,8 +682,9 @@
             <thead>
               <tr>
                 <th class="rank">#</th>
-                <th>Player</th>
-                <th class="num">Pts</th>
+                <th>name</th>
+                <th class="num">GD</th>
+                <th class="num">Points</th>
               </tr>
             </thead>
             <tbody id="standingsBody"></tbody>
@@ -943,7 +944,8 @@
             ? rankFromField
             : (Number.isFinite(rankFromNumeric) ? rankFromNumeric : 9999),
           player: safeStr(get(r,"Player") || get(r,"Name") || (numericKey ? r[numericKey] : "")),
-          pts: get(r,"Pts") || get(r,"PTS") || get(r,"Points") || get(r,"points") || get(r,"")
+          pts: get(r,"Pts") || get(r,"PTS") || get(r,"Points") || get(r,"points") || get(r,""),
+          gd: get(r,"GD") || get(r,"Gd") || get(r,"gd") || get(r,"Goal Difference") || get(r,"Goal difference") || get(r,"goal difference") || ""
         };
       })
       .filter(x => x.player)
@@ -957,6 +959,7 @@
         <tr class="${rowClass}">
           <td class="rank num">${x.rank}</td>
           <td>${escapeHtml(x.player)}</td>
+          <td class="num">${escapeHtml(String(x.gd ?? ""))}</td>
           <td class="num"><b>${escapeHtml(String(x.pts ?? ""))}</b></td>
         </tr>
       `;
