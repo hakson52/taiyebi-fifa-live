@@ -1,0 +1,701 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Fresco Cup — FIFA Tournament Season 2</title>
+  <style>
+    :root{
+      --bg:#080604;
+      --card:#121008;
+      --card2:#0E0C06;
+      --line:rgba(212,168,67,.18);
+      --text:rgba(255,255,255,.92);
+      --muted:rgba(255,255,255,.55);
+      --accent:#D4A843;
+      --accent2:#C49B3A;
+      --gold-glow:rgba(212,168,67,.25);
+      --good:#35D07F;
+      --warn:#FFC857;
+      --bad:#FF5A6E;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      background:
+        radial-gradient(900px 500px at 15% 0%, rgba(212,168,67,.10), transparent 60%),
+        radial-gradient(700px 400px at 85% 10%, rgba(196,155,58,.07), transparent 60%),
+        radial-gradient(400px 400px at 50% 100%, rgba(212,168,67,.05), transparent 60%),
+        var(--bg);
+      color:var(--text);
+      min-height:100vh;
+    }
+    .wrap{max-width:1400px;margin:0 auto;padding:22px}
+
+    /* Hero Banner */
+    .hero{
+      position:relative;overflow:hidden;
+      border-radius:20px;margin-bottom:18px;
+      border:1px solid rgba(212,168,67,.22);
+      background:linear-gradient(135deg, #0D0A04, #151005);
+      padding:28px 30px;
+      display:flex;align-items:center;gap:24px;
+    }
+    .hero::before{
+      content:'';position:absolute;top:-50%;left:-10%;
+      width:60%;height:200%;
+      background:radial-gradient(ellipse, rgba(212,168,67,.08), transparent 70%);
+      pointer-events:none;
+    }
+    .hero-logo{
+      width:72px;height:72px;border-radius:18px;flex-shrink:0;
+      background:linear-gradient(135deg, #D4A843, #8B6914);
+      box-shadow:0 8px 32px rgba(212,168,67,.30);
+      display:flex;align-items:center;justify-content:center;
+      font-size:28px;font-weight:900;color:#080604;
+      letter-spacing:-1px;
+    }
+    .hero-info{flex:1;min-width:0}
+    .hero-info h1{
+      margin:0;font-size:22px;font-weight:800;letter-spacing:.5px;
+      background:linear-gradient(135deg, #F5DCA0, #D4A843, #A07C28);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+      background-clip:text;
+    }
+    .hero-info .hero-sub{
+      margin:4px 0 0;font-size:13px;color:var(--muted);letter-spacing:.3px;
+    }
+    .hero-info .hero-sub b{color:var(--accent)}
+    .hero-venue{
+      margin:8px 0 0;font-size:11.5px;color:rgba(255,255,255,.40);
+      letter-spacing:.3px;
+    }
+    .hero-badge{
+      flex-shrink:0;padding:8px 16px;border-radius:999px;
+      background:linear-gradient(135deg, rgba(212,168,67,.15), rgba(212,168,67,.05));
+      border:1px solid rgba(212,168,67,.25);
+      font-size:11px;color:var(--accent);letter-spacing:.8px;text-transform:uppercase;font-weight:700;
+    }
+    .topbar{
+      display:flex;align-items:center;justify-content:space-between;gap:14px;
+      padding:14px 16px;border:1px solid var(--line);border-radius:16px;
+      background:linear-gradient(180deg, rgba(212,168,67,.05), rgba(212,168,67,.01));
+      backdrop-filter: blur(10px);
+    }
+    .brand{display:flex;align-items:center;gap:12px}
+    .badge{
+      width:38px;height:38px;border-radius:12px;
+      background:linear-gradient(135deg, #D4A843, #8B6914);
+      box-shadow:0 6px 20px rgba(212,168,67,.25);
+      display:flex;align-items:center;justify-content:center;
+      font-size:14px;font-weight:900;color:#080604;
+    }
+    .title h1{margin:0;font-size:15px;letter-spacing:.3px;color:var(--accent)}
+    .title p{margin:2px 0 0;color:var(--muted);font-size:12px}
+    .controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+    .pill{
+      display:flex;align-items:center;gap:10px;
+      padding:10px 12px;border-radius:14px;border:1px solid var(--line);
+      background:rgba(212,168,67,.03)
+    }
+    label{color:var(--muted);font-size:12px}
+    select, input{
+      color:var(--text);background:rgba(0,0,0,.40);
+      border:1px solid rgba(212,168,67,.16);
+      padding:8px 10px;border-radius:12px;outline:none;
+    }
+    select:focus, input:focus{border-color:rgba(212,168,67,.35)}
+    .status{
+      padding:8px 12px;border-radius:999px;border:1px solid var(--line);
+      font-size:12px;color:var(--muted);background:rgba(212,168,67,.03)
+    }
+    .status b{color:var(--text)}
+    .grid{
+      display:grid;grid-template-columns: 1.25fr .75fr; gap:16px; margin-top:16px;
+    }
+    @media (max-width: 980px){ .grid{grid-template-columns:1fr} }
+    .card{
+      border:1px solid var(--line);border-radius:18px;
+      background:linear-gradient(180deg, rgba(212,168,67,.04), rgba(212,168,67,.01));
+      padding:14px;
+    }
+    .card h2{
+      margin:0 0 10px;font-size:13px;letter-spacing:.8px;text-transform:uppercase;
+      color:var(--accent);
+      display:flex;align-items:center;justify-content:space-between
+    }
+    .subnote{color:var(--muted);font-size:12px;font-weight:400}
+    .matches{
+      display:grid;grid-template-columns:1fr 1fr; gap:12px;
+    }
+    @media (max-width: 640px){ .matches{grid-template-columns:1fr} }
+    .match{
+      background:rgba(0,0,0,.30);
+      border:1px solid rgba(212,168,67,.12);
+      border-radius:16px;padding:12px;
+      display:flex;flex-direction:column;gap:10px;
+      min-height:112px;
+    }
+    .match:hover{border-color:rgba(212,168,67,.25);background:rgba(0,0,0,.35)}
+    .match-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .setup{
+      font-size:12px;color:var(--accent);
+      padding:6px 10px;border-radius:999px;border:1px solid rgba(212,168,67,.18);
+      background:rgba(212,168,67,.06)
+    }
+    .roundtag{font-size:12px;color:var(--muted)}
+    .row{
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      padding:8px 10px;border-radius:14px;background:rgba(255,255,255,.02);
+      border:1px solid rgba(255,255,255,.05)
+    }
+    .name{font-weight:650;letter-spacing:.2px}
+    .score{
+      font-variant-numeric: tabular-nums;
+      font-weight:800;font-size:18px;
+      padding:4px 10px;border-radius:12px;
+      background:rgba(212,168,67,.10);
+      border:1px solid rgba(212,168,67,.22);
+      color:var(--accent);
+      min-width:68px;text-align:center;
+    }
+    .score.dim{opacity:.45}
+    table{
+      width:100%;border-collapse:separate;border-spacing:0 8px;
+      font-size:13px;
+    }
+    thead th{
+      text-align:left;color:var(--accent);
+      font-weight:700;font-size:12px;letter-spacing:.8px;text-transform:uppercase;
+      padding:0 10px;
+    }
+    tbody tr{
+      background:rgba(0,0,0,.28);
+      border:1px solid rgba(212,168,67,.08);
+    }
+    tbody td{
+      padding:10px;border-top:1px solid rgba(255,255,255,.00);
+      border-bottom:1px solid rgba(255,255,255,.00);
+    }
+    tbody tr td:first-child{border-radius:14px 0 0 14px}
+    tbody tr td:last-child{border-radius:0 14px 14px 0}
+    .rank{width:54px}
+    .num{font-variant-numeric: tabular-nums}
+    .qual{
+      background:rgba(53,208,127,.08) !important;
+      border:1px solid rgba(53,208,127,.18) !important;
+    }
+    .cutline{
+      margin-top:8px;padding:10px 12px;border-radius:14px;
+      border:1px dashed rgba(212,168,67,.20);
+      background:rgba(212,168,67,.03);
+      color:var(--muted);font-size:12.5px
+    }
+    .bracket{
+      display:grid;grid-template-columns: repeat(4, 1fr); gap:10px;
+    }
+    @media (max-width:980px){ .bracket{grid-template-columns:1fr 1fr} }
+    @media (max-width:560px){ .bracket{grid-template-columns:1fr} }
+    .col{
+      border:1px solid rgba(212,168,67,.12);
+      background:rgba(0,0,0,.25);
+      border-radius:16px;padding:10px;
+      min-height:160px;
+    }
+    .col h3{
+      margin:0 0 8px;font-size:12px;letter-spacing:.8px;text-transform:uppercase;color:var(--accent)
+    }
+    .tile{
+      border:1px solid rgba(212,168,67,.10);
+      background:rgba(212,168,67,.03);
+      border-radius:14px;padding:10px;margin-bottom:8px;
+    }
+    .tile:hover{border-color:rgba(212,168,67,.22)}
+    .tile .m{display:flex;justify-content:space-between;gap:10px;font-size:12px;color:var(--muted)}
+    .tile .p{display:flex;justify-content:space-between;gap:10px;margin-top:6px}
+    .tile .p span:first-child{font-weight:650}
+    .tiny{font-size:12px;color:var(--muted)}
+    .footer{
+      margin-top:14px;color:var(--muted);font-size:12px;
+      display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap
+    }
+    a{color:var(--accent);text-decoration:none}
+    a:hover{color:#F5DCA0}
+
+    /* Sponsors Section */
+    .sponsors-section{
+      margin-top:20px;
+      border:1px solid var(--line);border-radius:18px;
+      background:linear-gradient(180deg, rgba(212,168,67,.04), rgba(212,168,67,.01));
+      padding:20px;
+    }
+    .sponsors-title{
+      margin:0 0 16px;font-size:13px;letter-spacing:.8px;text-transform:uppercase;
+      color:var(--accent);text-align:center;
+    }
+    .sponsors-grid{
+      display:grid;grid-template-columns:repeat(3, 1fr);gap:12px;
+    }
+    .sponsor-card{
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      padding:16px 10px;border-radius:14px;
+      border:1px solid rgba(212,168,67,.12);
+      background:rgba(0,0,0,.25);
+      transition:border-color .2s, background .2s;
+      text-align:center;
+    }
+    .sponsor-card:hover{
+      border-color:rgba(212,168,67,.30);
+      background:rgba(212,168,67,.06);
+    }
+    .sponsor-logo{
+      width:100%;max-width:160px;border-radius:10px;
+      display:block;margin:0 auto;
+    }
+
+    /* Enhanced Mobile Responsiveness */
+    @media(max-width:640px){
+      .wrap{padding:12px}
+      .hero{flex-direction:column;text-align:center;padding:18px 14px;border-radius:14px}
+      .hero-logo{width:56px;height:56px;font-size:22px;border-radius:14px}
+      .hero-info h1{font-size:18px}
+      .hero-info .hero-sub{font-size:12px}
+      .hero-venue{font-size:10.5px}
+      .hero-badge{align-self:center;font-size:10px;padding:6px 12px}
+      .topbar{
+        flex-direction:column;align-items:stretch;
+        padding:12px;border-radius:14px;gap:10px
+      }
+      .brand{justify-content:center}
+      .badge{width:32px;height:32px;border-radius:10px;font-size:12px}
+      .title h1{font-size:14px}
+      .title p{font-size:11px}
+      .controls{justify-content:center;gap:8px}
+      .pill{padding:8px 10px;border-radius:12px}
+      .pill label{font-size:11px}
+      select, input{padding:6px 8px;font-size:13px;border-radius:10px}
+      .status{font-size:11px;padding:6px 10px}
+      .grid{gap:12px;margin-top:12px}
+      .card{border-radius:14px;padding:12px}
+      .card h2{font-size:12px;flex-direction:column;align-items:flex-start;gap:4px}
+      .subnote{font-size:11px}
+      .match{border-radius:12px;padding:10px;min-height:100px}
+      .setup{font-size:11px;padding:5px 8px}
+      .roundtag{font-size:11px}
+      .row{padding:6px 8px;border-radius:10px}
+      .name{font-size:13px}
+      .score{font-size:16px;padding:3px 8px;border-radius:10px;min-width:58px}
+      table{font-size:12px}
+      thead th{font-size:11px;padding:0 6px}
+      tbody td{padding:8px 6px}
+      .cutline{font-size:11.5px;padding:8px 10px;border-radius:12px}
+      .col{border-radius:12px;padding:8px;min-height:120px}
+      .col h3{font-size:11px}
+      .tile{border-radius:12px;padding:8px}
+      .tile .m{font-size:11px}
+      .tile .p{font-size:13px}
+      .footer{font-size:11px}
+      .sponsors-section{padding:14px;border-radius:14px;margin-top:14px}
+      .sponsors-grid{grid-template-columns:repeat(2, 1fr);gap:10px}
+      .sponsor-card{padding:10px 6px}
+      .sponsor-logo{max-width:140px;border-radius:8px}
+    }
+
+    /* Extra small screens */
+    @media(max-width:380px){
+      .wrap{padding:8px}
+      .hero{padding:14px 10px}
+      .hero-info h1{font-size:16px}
+      .controls{flex-direction:column;align-items:stretch}
+      .pill{justify-content:center}
+      .status{text-align:center}
+      .sponsors-grid{grid-template-columns:repeat(2, 1fr);gap:8px}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <!-- Hero Banner -->
+    <div class="hero">
+      <div class="hero-logo">FC</div>
+      <div class="hero-info">
+        <h1>Fresco Cup — FIFA Tournament</h1>
+        <div class="hero-sub"><b>Season 2</b> &nbsp;|&nbsp; PS5 &nbsp;|&nbsp; Toloba Taiyebi Mohallah, Pune</div>
+        <div class="hero-venue">Jamali Hall &bull; Taiyebi Masjid Burhani Colony &bull; Presented by Fresco Realty</div>
+      </div>
+      <div class="hero-badge">Live Dashboard</div>
+    </div>
+
+    <div class="topbar">
+      <div class="brand">
+        <div class="badge">FC</div>
+        <div class="title">
+          <h1>Fresco Cup — Live</h1>
+          <p>Now Playing &bull; Standings &bull; Playoffs (auto refresh)</p>
+        </div>
+      </div>
+
+      <div class="controls">
+        <div class="pill">
+          <label for="roundSelect">Round</label>
+          <select id="roundSelect"></select>
+        </div>
+        <div class="pill">
+          <label for="cutoffInput">Qualify Top</label>
+          <input id="cutoffInput" type="number" min="1" max="28" value="14" style="width:84px"/>
+        </div>
+        <div class="status" id="status">Status: <b>Loading…</b></div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h2>
+          <span>Now Playing</span>
+          <span class="subnote">Setup 1–4 for selected round</span>
+        </h2>
+        <div class="matches" id="nowPlaying"></div>
+
+        <div class="footer">
+          <div>Tip: change <b>Round</b> above to control what’s on TV.</div>
+          <div class="tiny">Refresh: every 5s</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>
+          <span>Live Standings</span>
+          <span class="subnote">Top 14 shown</span>
+        </h2>
+        <div style="overflow:auto">
+          <table>
+            <thead>
+              <tr>
+                <th class="rank">#</th>
+                <th>Player</th>
+                <th class="num">GD</th>
+                <th class="num">Pts</th>
+              </tr>
+            </thead>
+            <tbody id="standingsBody"></tbody>
+          </table>
+        </div>
+        <div class="cutline" id="cutline"></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <h2>
+        <span>Playoffs</span>
+        <span class="subnote">Top 2 protected • Seeds 3–14 play-in • QF → SF → Final</span>
+      </h2>
+      <div class="bracket">
+        <div class="col">
+          <h3>Play-In</h3>
+          <div id="playinCol"></div>
+        </div>
+        <div class="col">
+          <h3>Quarter Finals</h3>
+          <div id="qfCol"></div>
+        </div>
+        <div class="col">
+          <h3>Semi Finals</h3>
+          <div id="sfCol"></div>
+        </div>
+        <div class="col">
+          <h3>Final</h3>
+          <div id="finalCol"></div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="tiny">Fresco Cup Season 2</div>
+        <div class="tiny" id="lastUpdated">—</div>
+      </div>
+    </div>
+
+    <!-- Sponsors Section -->
+    <div class="sponsors-section">
+      <h2 class="sponsors-title">Our Sponsors</h2>
+      <div class="sponsors-grid">
+        <div class="sponsor-card">
+          <img class="sponsor-logo" src="assets/sponsors/divine-caterers.png" alt="Divine Caterers" />
+        </div>
+        <div class="sponsor-card">
+          <img class="sponsor-logo" src="assets/sponsors/juice-53.png" alt="Juice 53" />
+        </div>
+        <div class="sponsor-card">
+          <img class="sponsor-logo" src="assets/sponsors/kfarid.png" alt="KFarid Events" />
+        </div>
+        <div class="sponsor-card">
+          <img class="sponsor-logo" src="assets/sponsors/premium.png" alt="Premium" />
+        </div>
+        <div class="sponsor-card">
+          <img class="sponsor-logo" src="assets/sponsors/visionary-services.png" alt="Visionary Services" />
+        </div>
+        <div class="sponsor-card">
+          <img class="sponsor-logo" src="assets/sponsors/tall-guy.png" alt="Tall Guy" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const API_BASE = "https://script.google.com/macros/s/AKfycbx9setn6rPa0559junEvAL5tjMydjNdi3WHeeQMUAgyuIJ1c91lA8qjVttjfOp92sY5Kw/exec";
+  const REFRESH_MS = 5000;
+
+  const elStatus = document.getElementById("status");
+  const elRoundSelect = document.getElementById("roundSelect");
+  const elCutoff = document.getElementById("cutoffInput");
+
+  const elNow = document.getElementById("nowPlaying");
+  const elStand = document.getElementById("standingsBody");
+  const elCutline = document.getElementById("cutline");
+
+  const elPlayIn = document.getElementById("playinCol");
+  const elQF = document.getElementById("qfCol");
+  const elSF = document.getElementById("sfCol");
+  const elFinal = document.getElementById("finalCol");
+  const elLast = document.getElementById("lastUpdated");
+
+  function normKey(k){
+    return String(k || "").trim().toLowerCase();
+  }
+  function get(obj, key){
+    const target = normKey(key);
+    for (const k of Object.keys(obj || {})){
+      if (normKey(k) === target) return obj[k];
+    }
+    return "";
+  }
+  function safeStr(v){ return (v===null || v===undefined) ? "" : String(v).trim(); }
+
+  async function fetchSheet(name){
+    const url = API_BASE + "?sheet=" + encodeURIComponent(name);
+    const res = await fetch(url, { cache:"no-store" });
+    if (!res.ok) throw new Error("Fetch failed: " + name);
+    return await res.json();
+  }
+
+  function setStatus(ok, msg){
+    elStatus.innerHTML = `Status: <b style="color:${ok ? 'var(--good)' : 'var(--bad)'}">${msg}</b>`;
+  }
+
+  function roundOptionsFromMatches(matches){
+    const rounds = new Set();
+    matches.forEach(m => {
+      const r = parseInt(get(m,"Round") || get(m,"round") || get(m,"ROUND") || 0, 10);
+      if (r) rounds.add(r);
+    });
+    return Array.from(rounds).sort((a,b)=>a-b);
+  }
+
+  function renderRoundSelect(rounds, suggested){
+    elRoundSelect.innerHTML = "";
+    rounds.forEach(r=>{
+      const opt = document.createElement("option");
+      opt.value = r;
+      opt.textContent = "Round " + r;
+      if (r === suggested) opt.selected = true;
+      elRoundSelect.appendChild(opt);
+    });
+  }
+
+  function inferBestRound(matches){
+    // Choose the lowest round that still has any unplayed match; else max round.
+    const byRound = new Map();
+    matches.forEach(m=>{
+      const r = parseInt(get(m,"Round"),10) || 0;
+      if (!r) return;
+      if (!byRound.has(r)) byRound.set(r, []);
+      byRound.get(r).push(m);
+    });
+    const rounds = Array.from(byRound.keys()).sort((a,b)=>a-b);
+    for (const r of rounds){
+      const list = byRound.get(r) || [];
+      const anyUnplayed = list.some(m => {
+        const played = get(m,"Played");
+        return String(played).trim() !== "1" && String(played).trim().toLowerCase() !== "true";
+      });
+      if (anyUnplayed) return r;
+    }
+    return rounds[rounds.length-1] || 1;
+  }
+
+  function cardMatch({setup, round, a, b, ga, gb}){
+    const scoreText = (ga!=="" && gb!=="") ? `${ga} - ${gb}` : "—";
+    const scoreClass = (ga!=="" && gb!=="") ? "score" : "score dim";
+    return `
+      <div class="match">
+        <div class="match-top">
+          <div class="setup">${setup}</div>
+          <div class="roundtag">Round ${round}</div>
+        </div>
+        <div class="row">
+          <div class="name">${escapeHtml(a || "TBD")}</div>
+          <div class="${scoreClass}">${escapeHtml(scoreText)}</div>
+        </div>
+        <div class="row">
+          <div class="name">${escapeHtml(b || "TBD")}</div>
+          <div class="tiny"> </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderNowPlaying(matches, round){
+    const setups = ["Setup 1","Setup 2","Setup 3","Setup 4"];
+    const roundMatches = matches.filter(m => String(get(m,"Round")) === String(round));
+
+    const html = setups.map(s=>{
+      const m = roundMatches.find(x => normKey(get(x,"Setup")) === normKey(s));
+      if (!m){
+        return cardMatch({setup:s, round, a:"—", b:"—", ga:"", gb:""});
+      }
+      return cardMatch({
+        setup: s,
+        round,
+        a: safeStr(get(m,"Player A")) || safeStr(get(m,"PlayerA")) || safeStr(get(m,"Player A ")),
+        b: safeStr(get(m,"Player B")) || safeStr(get(m,"PlayerB")) || safeStr(get(m,"Player B ")),
+        ga: safeStr(get(m,"Goals A")),
+        gb: safeStr(get(m,"Goals B"))
+      });
+    }).join("");
+
+    elNow.innerHTML = html;
+  }
+
+  function renderStandings(rows, cutoff){
+    // Expect Rank / Player / GD / Pts
+    const cleaned = rows
+      .map(r => ({
+        rank: parseInt(get(r,"Rank") || get(r,"rank") || 9999, 10),
+        player: safeStr(get(r,"Player")),
+        gd: get(r,"GD"),
+        pts: get(r,"Pts") || get(r,"PTS") || get(r,"Points") || get(r,"points")
+      }))
+      .filter(x => x.player)
+      .sort((a,b)=>a.rank-b.rank);
+
+    const showN = Math.min(cutoff, cleaned.length);
+    const top = cleaned.slice(0, showN);
+
+    elStand.innerHTML = top.map(x => {
+      const isQual = x.rank <= cutoff;
+      return `
+        <tr class="${isQual ? 'qual' : ''}">
+          <td class="rank num">${x.rank}</td>
+          <td>${escapeHtml(x.player)}</td>
+          <td class="num">${escapeHtml(String(x.gd ?? ""))}</td>
+          <td class="num"><b>${escapeHtml(String(x.pts ?? ""))}</b></td>
+        </tr>
+      `;
+    }).join("");
+
+    elCutline.textContent = `Qualification: Top ${cutoff}. Seeds 1–2 protected • Seeds 3–14 play-in (6 matches).`;
+  }
+
+  function tile(matchId, a, b, score, winner){
+    return `
+      <div class="tile">
+        <div class="m">
+          <span>${escapeHtml(matchId)}</span>
+          <span>${winner ? "Winner: " + escapeHtml(winner) : ""}</span>
+        </div>
+        <div class="p"><span>${escapeHtml(a || "TBD")}</span><span class="num">${escapeHtml(score || "—")}</span></div>
+        <div class="p"><span>${escapeHtml(b || "TBD")}</span><span class="tiny"></span></div>
+      </div>
+    `;
+  }
+
+  function renderPlayoffs(rows){
+    // Expect Stage, Match, Player A, Goals A, Pens A, Player B, Goals B, Pens B, Winner
+    const playin = [];
+    const qf = [];
+    const sf = [];
+    const fin = [];
+
+    rows.forEach(r=>{
+      const stage = normKey(get(r,"Stage"));
+      const match = safeStr(get(r,"Match"));
+      const a = safeStr(get(r,"Player A"));
+      const b = safeStr(get(r,"Player B"));
+      const ga = safeStr(get(r,"Goals A"));
+      const gb = safeStr(get(r,"Goals B"));
+      const pa = safeStr(get(r,"Pens A"));
+      const pb = safeStr(get(r,"Pens B"));
+      const winner = safeStr(get(r,"Winner"));
+
+      let score = "";
+      if (ga!=="" && gb!==""){
+        score = `${ga}-${gb}`;
+        if (pa!=="" && pb!=="") score += ` (pens ${pa}-${pb})`;
+      }
+
+      // Skip "Protected" lines if they exist as non-matches
+      if (stage.includes("protected")) return;
+
+      if (stage.includes("play")) playin.push({match,a,b,score,winner});
+      else if (stage === "qf" || stage.includes("quarter")) qf.push({match,a,b,score,winner});
+      else if (stage === "sf" || stage.includes("semi")) sf.push({match,a,b,score,winner});
+      else if (stage.includes("final") || match.toLowerCase()==="f") fin.push({match,a,b,score,winner});
+    });
+
+    elPlayIn.innerHTML = playin.length ? playin.map(x=>tile(x.match,x.a,x.b,x.score,x.winner)).join("") : `<div class="tiny">Play-in not started</div>`;
+    elQF.innerHTML     = qf.length     ? qf.map(x=>tile(x.match,x.a,x.b,x.score,x.winner)).join("") : `<div class="tiny">Quarter Finals not started</div>`;
+    elSF.innerHTML     = sf.length     ? sf.map(x=>tile(x.match,x.a,x.b,x.score,x.winner)).join("") : `<div class="tiny">Semi Finals not started</div>`;
+    elFinal.innerHTML  = fin.length    ? fin.map(x=>tile("Final",x.a,x.b,x.score,x.winner)).join("") : `<div class="tiny">Final not started</div>`;
+  }
+
+  function escapeHtml(str){
+    return String(str ?? "")
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#039;");
+  }
+
+  async function refresh(){
+    try{
+      setStatus(true, "Loading…");
+
+      const [matches, standings, playoffs] = await Promise.all([
+        fetchSheet("Matches"),
+        fetchSheet("Standings"),
+        fetchSheet("Playoffs"),
+      ]);
+
+      // round selector init
+      const rounds = roundOptionsFromMatches(matches);
+      if (!elRoundSelect.options.length){
+        const suggested = inferBestRound(matches);
+        renderRoundSelect(rounds, suggested);
+      }
+
+      const round = parseInt(elRoundSelect.value || rounds[0] || 1, 10);
+      const cutoff = parseInt(elCutoff.value || 14, 10);
+
+      renderNowPlaying(matches, round);
+      renderStandings(standings, cutoff);
+      renderPlayoffs(playoffs);
+
+      const now = new Date();
+      elLast.textContent = "Last updated: " + now.toLocaleTimeString();
+      setStatus(true, "Live");
+    }catch(err){
+      console.error(err);
+      setStatus(false, "API error");
+    }
+  }
+
+  // refresh on changes
+  elRoundSelect.addEventListener("change", refresh);
+  elCutoff.addEventListener("change", refresh);
+
+  refresh();
+  setInterval(refresh, REFRESH_MS);
+</script>
+</body>
+</html>
