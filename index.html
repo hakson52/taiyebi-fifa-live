@@ -313,6 +313,69 @@
       border:1px solid rgba(212,168,67,.18);
       background:rgba(212,168,67,.04);
     }
+    .popup-overlay{
+      position:fixed;inset:0;display:none;align-items:center;justify-content:center;
+      background:rgba(0,0,0,.65);
+      backdrop-filter: blur(6px);
+      z-index:999;
+      padding:20px;
+    }
+    .popup-overlay.show{display:flex}
+    .popup{
+      position:relative;
+      width:min(760px, 96vw);
+      border-radius:24px;
+      border:2px solid rgba(212,168,67,.6);
+      background:linear-gradient(135deg, rgba(18,16,8,.95), rgba(12,10,4,.98));
+      box-shadow:0 26px 70px rgba(0,0,0,.65), 0 0 60px rgba(212,168,67,.35);
+      padding:36px 34px 28px;
+      text-align:center;
+      overflow:hidden;
+    }
+    .popup h3{
+      margin:0 0 6px;
+      font-size:24px;letter-spacing:1px;
+      color:#F5DCA0;
+      text-transform:uppercase;
+    }
+    .popup .winner{
+      font-size:36px;font-weight:900;letter-spacing:.8px;
+      color:#FFD770;
+      margin:10px 0 8px;
+    }
+    .popup .runner{
+      font-size:20px;color:#F5DCA0;font-weight:900;
+      text-shadow:0 0 16px rgba(212,168,67,.45);
+    }
+    .popup-close{
+      position:absolute;top:10px;right:10px;
+      width:30px;height:30px;border-radius:999px;
+      border:1px solid rgba(212,168,67,.35);
+      background:rgba(212,168,67,.08);
+      color:var(--text);cursor:pointer;
+    }
+    .confetti{
+      position:absolute;inset:-10% 0 auto 0;height:140%;
+      pointer-events:none;overflow:hidden;
+    }
+    .confetti span{
+      position:absolute;top:-10%;
+      width:10px;height:16px;
+      background:var(--c, #F5DCA0);
+      opacity:.9;border-radius:3px;
+      animation:
+        confettiFall var(--d, 3.4s) linear infinite,
+        confettiSway var(--d2, 2.6s) ease-in-out infinite;
+      transform:translateX(var(--x, 0)) rotate(var(--r, 0deg));
+    }
+    @keyframes confettiFall{
+      0%{transform:translate(var(--x, 0), -20px) rotate(var(--r, 0deg))}
+      100%{transform:translate(var(--x, 0), 520px) rotate(calc(var(--r, 0deg) + 260deg))}
+    }
+    @keyframes confettiSway{
+      0%, 100%{margin-left:-8px}
+      50%{margin-left:10px}
+    }
     .match:hover{border-color:rgba(212,168,67,.25);background:rgba(0,0,0,.35)}
     .match-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
     .setup{
@@ -326,7 +389,14 @@
       padding:8px 10px;border-radius:14px;background:rgba(255,255,255,.02);
       border:1px solid rgba(255,255,255,.05)
     }
-    .name{font-weight:650;letter-spacing:.2px}
+    .name{font-weight:650;letter-spacing:.2px;display:flex;align-items:center;gap:6px}
+    .winner-badge{
+      font-size:10px;font-weight:900;letter-spacing:.6px;
+      padding:2px 6px;border-radius:999px;
+      border:1px solid rgba(212,168,67,.45);
+      background:rgba(212,168,67,.12);
+      color:#F5DCA0;
+    }
     .score{
       font-variant-numeric: tabular-nums;
       font-weight:800;font-size:18px;
@@ -857,6 +927,16 @@
     </div>
   </div>
 
+  <div class="popup-overlay" id="finalPopup">
+    <div class="popup">
+      <button class="popup-close" id="finalPopupClose" aria-label="Close">✕</button>
+      <div class="confetti" id="finalConfetti"></div>
+      <h3>Champion</h3>
+      <div class="winner" id="finalWinner">—</div>
+      <div class="runner" id="finalRunner">Runner-up: —</div>
+    </div>
+  </div>
+
 <script>
   const API_BASE = "https://script.google.com/macros/s/AKfycbx9setn6rPa0559junEvAL5tjMydjNdi3WHeeQMUAgyuIJ1c91lA8qjVttjfOp92sY5Kw/exec";
   const REFRESH_MS = 5000;
@@ -871,6 +951,11 @@
   const elStagePanels = document.querySelectorAll(".stage-panel");
   const elPlayerSelect = document.getElementById("playerSelect");
   const elPlayerMatches = document.getElementById("playerMatches");
+  const elFinalPopup = document.getElementById("finalPopup");
+  const elFinalPopupClose = document.getElementById("finalPopupClose");
+  const elFinalWinner = document.getElementById("finalWinner");
+  const elFinalRunner = document.getElementById("finalRunner");
+  const elFinalConfetti = document.getElementById("finalConfetti");
 
   const elPlayIn = document.getElementById("playinCol");
   const elQF = document.getElementById("qfCol");
@@ -885,6 +970,7 @@
   let previousPlayoffIndividualScores = new Map();
   let latestMatches = [];
   let latestPlayoffs = [];
+  let finalPopupShown = false;
 
   function normKey(k){
     return String(k || "").trim().toLowerCase();
@@ -897,6 +983,15 @@
     return "";
   }
   function safeStr(v){ return (v===null || v===undefined) ? "" : String(v).trim(); }
+  function penaltyVal(r, side){
+    const key = side === "A" ? "A" : "B";
+    return safeStr(
+      get(r, `Pens ${key}`) ||
+      get(r, `Pen ${key}`) ||
+      get(r, `Penalty ${key}`) ||
+      get(r, `Penalties ${key}`)
+    );
+  }
 
   async function fetchSheet(name){
     const url = API_BASE + "?sheet=" + encodeURIComponent(name);
@@ -950,7 +1045,11 @@
     return rounds[rounds.length-1] || 1;
   }
 
-  function cardMatch({setup, round, a, b, ga, gb, isScoreUpdated, playerAScored, playerBScored}){
+  function winnerBadge(isWinner){
+    return isWinner ? `<span class="winner-badge">W</span>` : "";
+  }
+
+  function cardMatch({setup, round, a, b, ga, gb, isScoreUpdated, playerAScored, playerBScored, winnerA, winnerB}){
     // Individual scores for each player
     const scoreA = ga !== "" ? ga : "—";
     const scoreB = gb !== "" ? gb : "—";
@@ -972,20 +1071,22 @@
           <div class="roundtag">Round ${round}</div>
         </div>
         <div class="row">
-          <div class="name ${playerAAnimClass}">${escapeHtml(a || "TBD")}</div>
+          <div class="name ${playerAAnimClass}">${escapeHtml(a || "TBD")}${winnerBadge(winnerA)}</div>
           <div class="individual-score ${scoreAAnimClass}">${scoreA}</div>
         </div>
         <div class="row">
-          <div class="name ${playerBAnimClass}">${escapeHtml(b || "TBD")}</div>
+          <div class="name ${playerBAnimClass}">${escapeHtml(b || "TBD")}${winnerBadge(winnerB)}</div>
           <div class="individual-score ${scoreBAnimClass}">${scoreB}</div>
         </div>
       </div>
     `;
   }
 
-  function cardPlayoff({stageLabel, stageClass, matchLabel, a, b, ga, gb, isScoreUpdated, playerAScored, playerBScored}){
-    const scoreA = ga !== "" ? ga : "—";
-    const scoreB = gb !== "" ? gb : "—";
+  function cardPlayoff({stageLabel, stageClass, matchLabel, a, b, ga, gb, pa, pb, isScoreUpdated, playerAScored, playerBScored, winnerA, winnerB}){
+    const penA = safeStr(pa);
+    const penB = safeStr(pb);
+    const scoreA = ga !== "" ? `${ga}${penA !== "" ? ` (${penA})` : ""}` : "—";
+    const scoreB = gb !== "" ? `${gb}${penB !== "" ? ` (${penB})` : ""}` : "—";
 
     const matchAnimClass = isScoreUpdated ? "match-updated" : "";
     const playerAAnimClass = playerAScored ? "name-scored" : "";
@@ -1000,11 +1101,11 @@
           <div class="roundtag">${escapeHtml(matchLabel)}</div>
         </div>
         <div class="row">
-          <div class="name ${playerAAnimClass}">${escapeHtml(a || "TBD")}</div>
+          <div class="name ${playerAAnimClass}">${escapeHtml(a || "TBD")}${winnerBadge(winnerA)}</div>
           <div class="individual-score ${scoreAAnimClass}">${scoreA}</div>
         </div>
         <div class="row">
-          <div class="name ${playerBAnimClass}">${escapeHtml(b || "TBD")}</div>
+          <div class="name ${playerBAnimClass}">${escapeHtml(b || "TBD")}${winnerBadge(winnerB)}</div>
           <div class="individual-score ${scoreBAnimClass}">${scoreB}</div>
         </div>
       </div>
@@ -1061,6 +1162,41 @@
     return "";
   }
 
+  function showFinalPopup(winner, runnerUp){
+    if (!elFinalPopup) return;
+    elFinalWinner.textContent = winner || "TBD";
+    elFinalRunner.textContent = `Runner-up: ${runnerUp || "TBD"}`;
+    buildConfetti(elFinalConfetti, 120);
+    elFinalPopup.classList.add("show");
+  }
+  function buildConfetti(container, count){
+    if (!container) return;
+    container.innerHTML = "";
+    const colors = ["#F5DCA0","#D4A843","#FFFFFF","#FFD770","#C49B3A"];
+    for (let i=0;i<count;i++){
+      const s = document.createElement("span");
+      const x = Math.random()*100;
+      const d = (3.0 + Math.random()*2.6).toFixed(2) + "s";
+      const d2 = (1.8 + Math.random()*1.6).toFixed(2) + "s";
+      const r = Math.floor(Math.random()*220) + "deg";
+      const c = colors[i % colors.length];
+      const w = 6 + Math.floor(Math.random()*8);
+      const h = 10 + Math.floor(Math.random()*12);
+      const delay = (Math.random()*2.5).toFixed(2) + "s";
+      s.style.left = x + "%";
+      s.style.setProperty("--x", (Math.random()*40 - 20) + "px");
+      s.style.setProperty("--d", d);
+      s.style.setProperty("--d2", d2);
+      s.style.setProperty("--r", r);
+      s.style.setProperty("--c", c);
+      s.style.width = w + "px";
+      s.style.height = h + "px";
+      s.style.borderRadius = Math.random() > 0.6 ? "50%" : "3px";
+      s.style.animationDelay = "-" + delay;
+      container.appendChild(s);
+    }
+  }
+
   function renderPlayerMatches(matches, playoffs, playerName){
     if (!elPlayerMatches) return;
     const target = safeStr(playerName);
@@ -1081,6 +1217,10 @@
       const gb = safeStr(get(m,"Goals B"));
       const matchLabel = round ? `Round ${round}${setup ? " • " + setup : ""}` : (setup || "League Match");
       const roundNum = parseInt(round, 10) || 0;
+      const gaNum = ga !== "" ? parseInt(ga, 10) : NaN;
+      const gbNum = gb !== "" ? parseInt(gb, 10) : NaN;
+      const winnerA = Number.isFinite(gaNum) && Number.isFinite(gbNum) && gaNum > gbNum;
+      const winnerB = Number.isFinite(gaNum) && Number.isFinite(gbNum) && gbNum > gaNum;
       list.push({
         stageLabel: "League",
         matchLabel,
@@ -1088,9 +1228,13 @@
         b,
         ga,
         gb,
+        pa: "",
+        pb: "",
         isScoreUpdated: false,
         playerAScored: false,
         playerBScored: false,
+        winnerA,
+        winnerB,
         sortKey: 0 * 1000 + roundNum
       });
     });
@@ -1104,6 +1248,9 @@
       if (a !== target && b !== target) return;
       const ga = safeStr(get(r,"Goals A"));
       const gb = safeStr(get(r,"Goals B"));
+      const pa = penaltyVal(r, "A");
+      const pb = penaltyVal(r, "B");
+      const winner = safeStr(get(r,"Winner"));
       const stageLabel = stageLabelFromStage(stage);
       const stageClass = stageClassFromStage(stage);
       const matchLabel = match ? `Match ${match}` : "Match";
@@ -1115,6 +1262,10 @@
           : (stage === "sf" || stage.includes("semi"))
             ? 3
             : (stage.includes("final") ? 4 : 1);
+      const gaNum = ga !== "" ? parseInt(ga, 10) : NaN;
+      const gbNum = gb !== "" ? parseInt(gb, 10) : NaN;
+      const winnerA = (winner && winner === a) || (!winner && Number.isFinite(gaNum) && Number.isFinite(gbNum) && gaNum > gbNum);
+      const winnerB = (winner && winner === b) || (!winner && Number.isFinite(gaNum) && Number.isFinite(gbNum) && gbNum > gaNum);
       list.push({
         stageLabel,
         stageClass,
@@ -1123,9 +1274,13 @@
         b,
         ga,
         gb,
+        pa,
+        pb,
         isScoreUpdated: false,
         playerAScored: false,
         playerBScored: false,
+        winnerA,
+        winnerB,
         sortKey: stageRank * 1000 + matchNum
       });
     });
@@ -1174,6 +1329,11 @@
       previousScores.set(setupKey, currentScore);
       previousIndividualScores.set(setupKey, {ga: currentGa, gb: currentGb});
 
+      const gaNum = ga !== "" ? parseInt(ga, 10) : NaN;
+      const gbNum = gb !== "" ? parseInt(gb, 10) : NaN;
+      const winnerA = Number.isFinite(gaNum) && Number.isFinite(gbNum) && gaNum > gbNum;
+      const winnerB = Number.isFinite(gaNum) && Number.isFinite(gbNum) && gbNum > gaNum;
+
       return cardMatch({
         setup: s,
         round,
@@ -1183,7 +1343,9 @@
         gb: gb,
         isScoreUpdated: isScoreUpdated,
         playerAScored: playerAScored,
-        playerBScored: playerBScored
+        playerBScored: playerBScored,
+        winnerA,
+        winnerB
       });
     }).join("");
 
@@ -1253,6 +1415,7 @@
     const qf = [];
     const sf = [];
     const fin = [];
+    let finalResult = null;
 
     rows.forEach(r=>{
       const stage = normKey(get(r,"Stage"));
@@ -1261,6 +1424,9 @@
       const b = safeStr(get(r,"Player B"));
       const ga = safeStr(get(r,"Goals A"));
       const gb = safeStr(get(r,"Goals B"));
+      const pa = penaltyVal(r, "A");
+      const pb = penaltyVal(r, "B");
+      const winner = safeStr(get(r,"Winner"));
       const stageLabel = stage.includes("play")
         ? "Play-In"
         : (stage === "qf" || stage.includes("quarter"))
@@ -1289,6 +1455,8 @@
       // Skip "Protected" lines if they exist as non-matches
       if (stage.includes("protected")) return;
 
+      const winnerA = winner && winner === a;
+      const winnerB = winner && winner === b;
       const payload = {
         stageLabel,
         stageClass,
@@ -1297,21 +1465,45 @@
         b,
         ga,
         gb,
+        pa,
+        pb,
         isScoreUpdated,
         playerAScored,
-        playerBScored
+        playerBScored,
+        winnerA,
+        winnerB
       };
 
       if (stage.includes("play")) playin.push(payload);
       else if (stage === "qf" || stage.includes("quarter")) qf.push(payload);
       else if (stage === "sf" || stage.includes("semi")) sf.push(payload);
       else if (stage.includes("final") || match.toLowerCase()==="f") fin.push(payload);
+
+      if (!finalResult && (stage.includes("final") || match.toLowerCase()==="f")){
+        const gaNum = ga !== "" ? parseInt(ga, 10) : NaN;
+        const gbNum = gb !== "" ? parseInt(gb, 10) : NaN;
+        let resolvedWinner = winner;
+        let runnerUp = "";
+        if (!resolvedWinner && Number.isFinite(gaNum) && Number.isFinite(gbNum) && a && b){
+          if (gaNum > gbNum) resolvedWinner = a;
+          else if (gbNum > gaNum) resolvedWinner = b;
+        }
+        if (resolvedWinner){
+          runnerUp = resolvedWinner === a ? b : a;
+          finalResult = {winner: resolvedWinner, runnerUp: runnerUp || ""};
+        }
+      }
     });
 
     elPlayIn.innerHTML = playin.length ? playin.map(x=>cardPlayoff(x)).join("") : `<div class="tiny">Play-in not started</div>`;
     elQF.innerHTML     = qf.length     ? qf.map(x=>cardPlayoff(x)).join("") : `<div class="tiny">Quarter Finals not started</div>`;
     elSF.innerHTML     = sf.length     ? sf.map(x=>cardPlayoff(x)).join("") : `<div class="tiny">Semi Finals not started</div>`;
     elFinal.innerHTML  = fin.length    ? fin.map(x=>cardPlayoff(x)).join("") : `<div class="tiny">Final not started</div>`;
+
+    if (finalResult && !finalPopupShown){
+      showFinalPopup(finalResult.winner, finalResult.runnerUp);
+      finalPopupShown = true;
+    }
 
   }
 
@@ -1388,6 +1580,14 @@
         panel.classList.toggle("active", panel.id === `stage-${stage}`);
       });
     });
+  }
+  if (elFinalPopup){
+    elFinalPopup.addEventListener("click", (e) => {
+      if (e.target === elFinalPopup) elFinalPopup.classList.remove("show");
+    });
+  }
+  if (elFinalPopupClose){
+    elFinalPopupClose.addEventListener("click", () => elFinalPopup.classList.remove("show"));
   }
 
   refresh();
