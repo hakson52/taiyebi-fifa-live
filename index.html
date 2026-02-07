@@ -22,6 +22,7 @@
       --bad:#FF5A6E;
     }
     *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
     body{
       margin:0;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
@@ -174,6 +175,15 @@
       font-size:12px;color:#F5DCA0;letter-spacing:1px;text-transform:uppercase;font-weight:800;
       text-shadow:0 1px 2px rgba(0,0,0,.5);
     }
+    .hero-right{
+      display:flex;flex-direction:column;align-items:flex-end;gap:8px;
+      flex-shrink:0;
+    }
+    .hero-status{
+      padding:8px 12px;border-radius:999px;border:1px solid var(--line);
+      font-size:12px;color:var(--muted);background:rgba(212,168,67,.03)
+    }
+    .hero-status b{color:var(--text)}
     .topbar{
       display:flex;align-items:center;justify-content:space-between;gap:14px;
       padding:14px 16px;border:1px solid var(--line);border-radius:16px;
@@ -242,6 +252,66 @@
       border-radius:16px;padding:12px;
       display:flex;flex-direction:column;gap:10px;
       min-height:112px;
+    }
+    .match.playin{
+      border-color:rgba(212,168,67,.22);
+      background:rgba(212,168,67,.04);
+    }
+    .match.quarters{
+      border-color:rgba(212,168,67,.30);
+      background:rgba(212,168,67,.07);
+      box-shadow:0 0 12px rgba(212,168,67,.12);
+    }
+    .match.semis{
+      border-color:rgba(212,168,67,.45);
+      background:rgba(212,168,67,.10);
+      box-shadow:0 0 16px rgba(212,168,67,.18);
+    }
+    .match.final{
+      border-color:rgba(212,168,67,.75);
+      background:linear-gradient(135deg, rgba(212,168,67,.20), rgba(212,168,67,.08));
+      box-shadow:0 0 20px rgba(212,168,67,.35);
+    }
+    .col .match{margin-bottom:10px}
+    .col .match:last-child{margin-bottom:0}
+    .stage-tabs{
+      display:flex;flex-wrap:wrap;gap:10px;
+      margin:16px 0;
+      padding:10px 12px;border-radius:16px;
+      border:1px solid var(--line);
+      background:linear-gradient(180deg, rgba(212,168,67,.05), rgba(212,168,67,.01));
+    }
+    .stage-tab{
+      border:1px solid rgba(212,168,67,.18);
+      background:rgba(212,168,67,.06);
+      color:var(--text);
+      padding:8px 14px;border-radius:999px;
+      font-size:12px;letter-spacing:.6px;text-transform:uppercase;font-weight:700;
+      cursor:pointer;
+      transition:all .2s ease;
+    }
+    .stage-tab:hover{border-color:rgba(212,168,67,.35);background:rgba(212,168,67,.10)}
+    .stage-tab.active{
+      border-color:rgba(212,168,67,.75);
+      background:linear-gradient(135deg, rgba(212,168,67,.25), rgba(212,168,67,.10));
+      color:#F5DCA0;
+      box-shadow:0 0 12px rgba(212,168,67,.25);
+    }
+    .stage-panel{display:none}
+    .stage-panel.active{display:block}
+    .card-head{
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      flex-wrap:wrap;
+    }
+    .card-head .pill{margin-left:auto}
+    .protected-list{
+      display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 4px;
+    }
+    .protected-item{
+      font-size:12px;color:var(--muted);
+      padding:6px 10px;border-radius:999px;
+      border:1px solid rgba(212,168,67,.18);
+      background:rgba(212,168,67,.04);
     }
     .match:hover{border-color:rgba(212,168,67,.25);background:rgba(0,0,0,.35)}
     .match-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
@@ -435,6 +505,7 @@
     }
     .standings-scroll{
       max-height:420px;
+      min-height:700px;
       overflow:auto;
       scrollbar-width: thin;
       scrollbar-color: transparent transparent;
@@ -550,6 +621,9 @@
       .pill label{font-size:11px}
       select, input{padding:6px 8px;font-size:13px;border-radius:10px}
       .status{font-size:11px;padding:6px 10px}
+      .hero-right{align-items:center}
+      .hero-status{font-size:11px;padding:6px 10px}
+      .stage-tabs{justify-content:center}
       .grid{gap:12px;margin-top:12px}
       .card{border-radius:14px;padding:12px}
       .card h2{font-size:12px;flex-direction:column;align-items:flex-start;gap:4px}
@@ -637,87 +711,120 @@
         <div class="hero-sub"><b>Season 2</b> &nbsp;|&nbsp; PS5 &nbsp;|&nbsp; Toloba Taiyebi Mohallah, Pune</div>
         <div class="hero-venue">Jamali Hall &bull; Taiyebi Masjid Burhani Colony &bull; Presented by Fresco Realty</div>
       </div>
-      <div class="hero-badge"><span>Live Dashboard</span></div>
-    </div>
-
-    <div class="topbar">
-      <div class="brand">
-        <div class="badge">FC</div>
-        <div class="title">
-          <h1>Fresco Cup — Live</h1>
-          <p>Now Playing &bull; Standings &bull; Playoffs (auto refresh)</p>
-        </div>
-      </div>
-
-      <div class="controls">
-        <div class="pill">
-          <label for="roundSelect">Round</label>
-          <select id="roundSelect"></select>
-        </div>
-        <div class="status" id="status">Status: <b>Loading…</b></div>
+      <div class="hero-right">
+        <div class="hero-badge"><span>Live Dashboard</span></div>
+        <div class="hero-status" id="status">Status: <b>Loading…</b></div>
       </div>
     </div>
 
-    <div class="grid">
+    <div class="stage-tabs" id="stageTabs">
+      <button class="stage-tab active" data-stage="league">League</button>
+      <button class="stage-tab" data-stage="playins">Play Ins</button>
+      <button class="stage-tab" data-stage="quarters">Quater Finals</button>
+      <button class="stage-tab" data-stage="semis">Semi Finals</button>
+      <button class="stage-tab" data-stage="final">Final</button>
+      <button class="stage-tab" data-scroll="standingsSection">Standings</button>
+      <button class="stage-tab" data-stage="player">Player Matches</button>
+    </div>
+
+    <div class="stage-panel active" id="stage-league">
       <div class="card">
-        <h2>
-          <span>Now Playing</span>
-          <span class="subnote">Setup 1–4 for selected round</span>
-        </h2>
+        <div class="card-head">
+          <h2>
+            <span>League Stage</span>
+          </h2>
+          <div class="pill">
+            <label for="roundSelect">Round</label>
+            <select id="roundSelect"></select>
+          </div>
+        </div>
         <div class="matches" id="nowPlaying"></div>
 
         <div class="footer">
-          <div>Tip: change <b>Round</b> above to control what’s on TV.</div>
+          <div>Tip: change <b>Round</b> to control what’s on TV.</div>
           <div class="tiny">Refresh: every 5s</div>
         </div>
       </div>
+    </div>
 
+    <div class="stage-panel" id="stage-playins">
       <div class="card">
         <h2>
-          <span>Live Standings</span>
-          <span class="subnote">All ranks</span>
+          <span>Play Ins</span>
+          <span class="subnote">Top 2 protected • Seeds 3–14 play-in</span>
         </h2>
-        <div class="standings-scroll">
-          <table>
-            <thead>
-              <tr>
-                <th class="rank">#</th>
-                <th>name</th>
-                <th class="num">GD</th>
-                <th class="num">Points</th>
-              </tr>
-            </thead>
-            <tbody id="standingsBody"></tbody>
-          </table>
-        </div>
-        <div class="cutline" id="cutline"></div>
+        <div class="matches" id="playinCol"></div>
       </div>
     </div>
 
-    <div class="card" style="margin-top:16px">
-      <h2>
-        <span>Playoffs</span>
-        <span class="subnote">Top 2 protected • Seeds 3–14 play-in • QF → SF → Final</span>
-      </h2>
-      <div class="bracket">
-        <div class="col">
-          <h3>Play-In</h3>
-          <div id="playinCol"></div>
-        </div>
-        <div class="col">
-          <h3>Quarter Finals</h3>
-          <div id="qfCol"></div>
-        </div>
-        <div class="col">
-          <h3>Semi Finals</h3>
-          <div id="sfCol"></div>
-        </div>
-        <div class="col">
-          <h3>Final</h3>
-          <div id="finalCol"></div>
-        </div>
+    <div class="stage-panel" id="stage-quarters">
+      <div class="card">
+        <h2>
+          <span>Quater Finals</span>
+          <span class="subnote">Knockout stage</span>
+        </h2>
+        <div class="matches" id="qfCol"></div>
       </div>
+    </div>
 
+    <div class="stage-panel" id="stage-semis">
+      <div class="card">
+        <h2>
+          <span>Semi Finals</span>
+          <span class="subnote">Knockout stage</span>
+        </h2>
+        <div class="matches" id="sfCol"></div>
+      </div>
+    </div>
+
+    <div class="stage-panel" id="stage-final">
+      <div class="card">
+        <h2>
+          <span>Final</span>
+          <span class="subnote">Championship match</span>
+        </h2>
+        <div class="matches" id="finalCol"></div>
+      </div>
+    </div>
+
+    <div class="stage-panel" id="stage-player">
+      <div class="card">
+        <div class="card-head">
+          <h2>
+            <span>Player Matches</span>
+          </h2>
+          <div class="pill">
+            <label for="playerSelect">Player</label>
+            <select id="playerSelect"></select>
+          </div>
+        </div>
+        <div class="matches" id="playerMatches"></div>
+      </div>
+    </div>
+
+    <div class="card" id="standingsSection" style="margin-top:16px">
+      <h2>
+        <span>Live Standings</span>
+        <span class="subnote">All ranks</span>
+      </h2>
+      <div class="standings-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th class="rank">#</th>
+              <th>name</th>
+              <th class="num">P</th>
+              <th class="num">W</th>
+              <th class="num">D</th>
+              <th class="num">L</th>
+              <th class="num">GD</th>
+              <th class="num">Points</th>
+            </tr>
+          </thead>
+          <tbody id="standingsBody"></tbody>
+        </table>
+      </div>
+      <div class="cutline" id="cutline"></div>
       <div class="footer">
         <div class="tiny">Fresco Cup Season 2</div>
         <div class="tiny" id="lastUpdated">—</div>
@@ -760,6 +867,10 @@
   const elNow = document.getElementById("nowPlaying");
   const elStand = document.getElementById("standingsBody");
   const elCutline = document.getElementById("cutline");
+  const elStageTabs = document.getElementById("stageTabs");
+  const elStagePanels = document.querySelectorAll(".stage-panel");
+  const elPlayerSelect = document.getElementById("playerSelect");
+  const elPlayerMatches = document.getElementById("playerMatches");
 
   const elPlayIn = document.getElementById("playinCol");
   const elQF = document.getElementById("qfCol");
@@ -770,6 +881,10 @@
   // Store previous scores for animation detection
   let previousScores = new Map();
   let previousIndividualScores = new Map(); // Track individual player scores
+  let previousPlayoffScores = new Map();
+  let previousPlayoffIndividualScores = new Map();
+  let latestMatches = [];
+  let latestPlayoffs = [];
 
   function normKey(k){
     return String(k || "").trim().toLowerCase();
@@ -868,6 +983,162 @@
     `;
   }
 
+  function cardPlayoff({stageLabel, stageClass, matchLabel, a, b, ga, gb, isScoreUpdated, playerAScored, playerBScored}){
+    const scoreA = ga !== "" ? ga : "—";
+    const scoreB = gb !== "" ? gb : "—";
+
+    const matchAnimClass = isScoreUpdated ? "match-updated" : "";
+    const playerAAnimClass = playerAScored ? "name-scored" : "";
+    const playerBAnimClass = playerBScored ? "name-scored" : "";
+    const scoreAAnimClass = playerAScored ? "score-updated" : "";
+    const scoreBAnimClass = playerBScored ? "score-updated" : "";
+
+    return `
+      <div class="match ${stageClass || ""} ${matchAnimClass}" data-setup="${escapeHtml(matchLabel)}">
+        <div class="match-top">
+          <div class="setup">${escapeHtml(stageLabel)}</div>
+          <div class="roundtag">${escapeHtml(matchLabel)}</div>
+        </div>
+        <div class="row">
+          <div class="name ${playerAAnimClass}">${escapeHtml(a || "TBD")}</div>
+          <div class="individual-score ${scoreAAnimClass}">${scoreA}</div>
+        </div>
+        <div class="row">
+          <div class="name ${playerBAnimClass}">${escapeHtml(b || "TBD")}</div>
+          <div class="individual-score ${scoreBAnimClass}">${scoreB}</div>
+        </div>
+      </div>
+    `;
+  }
+
+  function playerSetFromData(matches, playoffs){
+    const players = new Set();
+    matches.forEach(m=>{
+      const a = safeStr(get(m,"Player A")) || safeStr(get(m,"PlayerA")) || safeStr(get(m,"Player A "));
+      const b = safeStr(get(m,"Player B")) || safeStr(get(m,"PlayerB")) || safeStr(get(m,"Player B "));
+      if (a) players.add(a);
+      if (b) players.add(b);
+    });
+    playoffs.forEach(r=>{
+      const a = safeStr(get(r,"Player A"));
+      const b = safeStr(get(r,"Player B"));
+      if (a) players.add(a);
+      if (b) players.add(b);
+    });
+    return Array.from(players).sort((a,b)=>a.localeCompare(b));
+  }
+
+  function renderPlayerSelect(matches, playoffs){
+    if (!elPlayerSelect) return;
+    const players = playerSetFromData(matches, playoffs);
+    const current = elPlayerSelect.value;
+    elPlayerSelect.innerHTML = "";
+    players.forEach(p=>{
+      const opt = document.createElement("option");
+      opt.value = p;
+      opt.textContent = p;
+      elPlayerSelect.appendChild(opt);
+    });
+    if (current && players.includes(current)){
+      elPlayerSelect.value = current;
+    } else if (players.length){
+      elPlayerSelect.value = players[0];
+    }
+  }
+
+  function stageLabelFromStage(stage){
+    if (stage.includes("play")) return "Play-In";
+    if (stage === "qf" || stage.includes("quarter")) return "Quarter Finals";
+    if (stage === "sf" || stage.includes("semi")) return "Semi Finals";
+    if (stage.includes("final")) return "Final";
+    return "Playoffs";
+  }
+  function stageClassFromStage(stage){
+    if (stage.includes("play")) return "playin";
+    if (stage === "qf" || stage.includes("quarter")) return "quarters";
+    if (stage === "sf" || stage.includes("semi")) return "semis";
+    if (stage.includes("final")) return "final";
+    return "";
+  }
+
+  function renderPlayerMatches(matches, playoffs, playerName){
+    if (!elPlayerMatches) return;
+    const target = safeStr(playerName);
+    if (!target){
+      elPlayerMatches.innerHTML = `<div class="tiny">Select a player to view matches</div>`;
+      return;
+    }
+    const list = [];
+
+    matches.forEach(m=>{
+      const a = safeStr(get(m,"Player A")) || safeStr(get(m,"PlayerA")) || safeStr(get(m,"Player A "));
+      const b = safeStr(get(m,"Player B")) || safeStr(get(m,"PlayerB")) || safeStr(get(m,"Player B "));
+      if (!a && !b) return;
+      if (a !== target && b !== target) return;
+      const round = safeStr(get(m,"Round"));
+      const setup = safeStr(get(m,"Setup"));
+      const ga = safeStr(get(m,"Goals A"));
+      const gb = safeStr(get(m,"Goals B"));
+      const matchLabel = round ? `Round ${round}${setup ? " • " + setup : ""}` : (setup || "League Match");
+      const roundNum = parseInt(round, 10) || 0;
+      list.push({
+        stageLabel: "League",
+        matchLabel,
+        a,
+        b,
+        ga,
+        gb,
+        isScoreUpdated: false,
+        playerAScored: false,
+        playerBScored: false,
+        sortKey: 0 * 1000 + roundNum
+      });
+    });
+
+    playoffs.forEach(r=>{
+      const stage = normKey(get(r,"Stage"));
+      const match = safeStr(get(r,"Match"));
+      const a = safeStr(get(r,"Player A"));
+      const b = safeStr(get(r,"Player B"));
+      if (!a && !b) return;
+      if (a !== target && b !== target) return;
+      const ga = safeStr(get(r,"Goals A"));
+      const gb = safeStr(get(r,"Goals B"));
+      const stageLabel = stageLabelFromStage(stage);
+      const stageClass = stageClassFromStage(stage);
+      const matchLabel = match ? `Match ${match}` : "Match";
+      const matchNum = parseInt(match, 10) || 0;
+      const stageRank = stage.includes("play")
+        ? 1
+        : (stage === "qf" || stage.includes("quarter"))
+          ? 2
+          : (stage === "sf" || stage.includes("semi"))
+            ? 3
+            : (stage.includes("final") ? 4 : 1);
+      list.push({
+        stageLabel,
+        stageClass,
+        matchLabel,
+        a,
+        b,
+        ga,
+        gb,
+        isScoreUpdated: false,
+        playerAScored: false,
+        playerBScored: false,
+        sortKey: stageRank * 1000 + matchNum
+      });
+    });
+
+    if (!list.length){
+      elPlayerMatches.innerHTML = `<div class="tiny">No matches found for ${escapeHtml(target)}</div>`;
+      return;
+    }
+
+    list.sort((a,b) => (b.sortKey || 0) - (a.sortKey || 0));
+    elPlayerMatches.innerHTML = list.map(x=>cardPlayoff(x)).join("");
+  }
+
   function renderNowPlaying(matches, round){
     const setups = ["Setup 1","Setup 2","Setup 3","Setup 4"];
     const roundMatches = matches.filter(m => String(get(m,"Round")) === String(round));
@@ -944,8 +1215,12 @@
             ? rankFromField
             : (Number.isFinite(rankFromNumeric) ? rankFromNumeric : 9999),
           player: safeStr(get(r,"Player") || get(r,"Name") || (numericKey ? r[numericKey] : "")),
-          pts: get(r,"Pts") || get(r,"PTS") || get(r,"Points") || get(r,"points") || get(r,""),
-          gd: get(r,"GD") || get(r,"Gd") || get(r,"gd") || get(r,"Goal Difference") || get(r,"Goal difference") || get(r,"goal difference") || ""
+          p: get(r,"P") || get(r,"Played") || get(r,"Matches") || get(r,"MP") || "0",
+          w: get(r,"W") || get(r,"Won") || get(r,"Wins") || "0",
+          d: get(r,"D") || get(r,"Draw") || get(r,"Drawn") || get(r,"Draws") || "0",
+          l: get(r,"L") || get(r,"Lost") || get(r,"Loss") || get(r,"Losses") || "0",
+          pts: get(r,"Pts") || get(r,"PTS") || get(r,"Points") || get(r,"points") || get(r,"") || "0",
+          gd: get(r,"GD") || get(r,"Gd") || get(r,"gd") || get(r,"Goal Difference") || get(r,"Goal difference") || get(r,"goal difference") || "0"
         };
       })
       .filter(x => x.player)
@@ -959,6 +1234,10 @@
         <tr class="${rowClass}">
           <td class="rank num">${x.rank}</td>
           <td>${escapeHtml(x.player)}</td>
+          <td class="num">${escapeHtml(String(x.p ?? ""))}</td>
+          <td class="num">${escapeHtml(String(x.w ?? ""))}</td>
+          <td class="num">${escapeHtml(String(x.d ?? ""))}</td>
+          <td class="num">${escapeHtml(String(x.l ?? ""))}</td>
           <td class="num">${escapeHtml(String(x.gd ?? ""))}</td>
           <td class="num"><b>${escapeHtml(String(x.pts ?? ""))}</b></td>
         </tr>
@@ -966,19 +1245,6 @@
     }).join("");
 
     elCutline.textContent = `Qualification: Top ${cutoff}. Top 1–2 secure • Ranks 3–${cutoff} qualified.`;
-  }
-
-  function tile(matchId, a, b, score, winner){
-    return `
-      <div class="tile">
-        <div class="m">
-          <span>${escapeHtml(matchId)}</span>
-          <span>${winner ? "Winner: " + escapeHtml(winner) : ""}</span>
-        </div>
-        <div class="p"><span>${escapeHtml(a || "TBD")}</span><span class="num">${escapeHtml(score || "—")}</span></div>
-        <div class="p"><span>${escapeHtml(b || "TBD")}</span><span class="tiny"></span></div>
-      </div>
-    `;
   }
 
   function renderPlayoffs(rows){
@@ -995,29 +1261,58 @@
       const b = safeStr(get(r,"Player B"));
       const ga = safeStr(get(r,"Goals A"));
       const gb = safeStr(get(r,"Goals B"));
-      const pa = safeStr(get(r,"Pens A"));
-      const pb = safeStr(get(r,"Pens B"));
-      const winner = safeStr(get(r,"Winner"));
+      const stageLabel = stage.includes("play")
+        ? "Play-In"
+        : (stage === "qf" || stage.includes("quarter"))
+          ? "Quarter Finals"
+          : (stage === "sf" || stage.includes("semi"))
+            ? "Semi Finals"
+            : (stage.includes("final") ? "Final" : "Playoffs");
+      const stageClass = stageClassFromStage(stage);
+      const matchLabel = match ? `Match ${match}` : "Match";
+      const matchKey = `playoff-${stageLabel}-${matchLabel}-${a}-${b}`;
 
-      let score = "";
-      if (ga!=="" && gb!==""){
-        score = `${ga}-${gb}`;
-        if (pa!=="" && pb!=="") score += ` (pens ${pa}-${pb})`;
-      }
+      const currentScore = (ga !== "" && gb !== "") ? `${ga}-${gb}` : "";
+      const previousScore = previousPlayoffScores.get(matchKey) || "";
+      const currentGa = ga !== "" ? parseInt(ga, 10) || 0 : 0;
+      const currentGb = gb !== "" ? parseInt(gb, 10) || 0 : 0;
+      const prevScores = previousPlayoffIndividualScores.get(matchKey) || {ga: 0, gb: 0};
+      const previousGa = prevScores.ga;
+      const previousGb = prevScores.gb;
+      const isScoreUpdated = currentScore !== "" && previousScore !== "" && currentScore !== previousScore;
+      const playerAScored = isScoreUpdated && currentGa > previousGa;
+      const playerBScored = isScoreUpdated && currentGb > previousGb;
+
+      previousPlayoffScores.set(matchKey, currentScore);
+      previousPlayoffIndividualScores.set(matchKey, {ga: currentGa, gb: currentGb});
 
       // Skip "Protected" lines if they exist as non-matches
       if (stage.includes("protected")) return;
 
-      if (stage.includes("play")) playin.push({match,a,b,score,winner});
-      else if (stage === "qf" || stage.includes("quarter")) qf.push({match,a,b,score,winner});
-      else if (stage === "sf" || stage.includes("semi")) sf.push({match,a,b,score,winner});
-      else if (stage.includes("final") || match.toLowerCase()==="f") fin.push({match,a,b,score,winner});
+      const payload = {
+        stageLabel,
+        stageClass,
+        matchLabel,
+        a,
+        b,
+        ga,
+        gb,
+        isScoreUpdated,
+        playerAScored,
+        playerBScored
+      };
+
+      if (stage.includes("play")) playin.push(payload);
+      else if (stage === "qf" || stage.includes("quarter")) qf.push(payload);
+      else if (stage === "sf" || stage.includes("semi")) sf.push(payload);
+      else if (stage.includes("final") || match.toLowerCase()==="f") fin.push(payload);
     });
 
-    elPlayIn.innerHTML = playin.length ? playin.map(x=>tile(x.match,x.a,x.b,x.score,x.winner)).join("") : `<div class="tiny">Play-in not started</div>`;
-    elQF.innerHTML     = qf.length     ? qf.map(x=>tile(x.match,x.a,x.b,x.score,x.winner)).join("") : `<div class="tiny">Quarter Finals not started</div>`;
-    elSF.innerHTML     = sf.length     ? sf.map(x=>tile(x.match,x.a,x.b,x.score,x.winner)).join("") : `<div class="tiny">Semi Finals not started</div>`;
-    elFinal.innerHTML  = fin.length    ? fin.map(x=>tile("Final",x.a,x.b,x.score,x.winner)).join("") : `<div class="tiny">Final not started</div>`;
+    elPlayIn.innerHTML = playin.length ? playin.map(x=>cardPlayoff(x)).join("") : `<div class="tiny">Play-in not started</div>`;
+    elQF.innerHTML     = qf.length     ? qf.map(x=>cardPlayoff(x)).join("") : `<div class="tiny">Quarter Finals not started</div>`;
+    elSF.innerHTML     = sf.length     ? sf.map(x=>cardPlayoff(x)).join("") : `<div class="tiny">Semi Finals not started</div>`;
+    elFinal.innerHTML  = fin.length    ? fin.map(x=>cardPlayoff(x)).join("") : `<div class="tiny">Final not started</div>`;
+
   }
 
   function escapeHtml(str){
@@ -1038,6 +1333,8 @@
         fetchSheet("Standings"),
         fetchSheet("Playoffs"),
       ]);
+      latestMatches = matches;
+      latestPlayoffs = playoffs;
 
       // round selector init
       const rounds = roundOptionsFromMatches(matches);
@@ -1051,6 +1348,10 @@
       renderNowPlaying(matches, round);
       renderStandings(standings);
       renderPlayoffs(playoffs);
+      renderPlayerSelect(matches, playoffs);
+      if (elPlayerSelect && elPlayerSelect.value){
+        renderPlayerMatches(matches, playoffs, elPlayerSelect.value);
+      }
 
       const now = new Date();
       elLast.textContent = "Last updated: " + now.toLocaleTimeString();
@@ -1063,6 +1364,31 @@
 
   // refresh on changes
   elRoundSelect.addEventListener("change", refresh);
+  if (elPlayerSelect){
+    elPlayerSelect.addEventListener("change", () => {
+      renderPlayerMatches(latestMatches, latestPlayoffs, elPlayerSelect.value);
+    });
+  }
+
+  // stage tab switching
+  if (elStageTabs){
+    elStageTabs.addEventListener("click", (e) => {
+      const btn = e.target.closest(".stage-tab");
+      if (!btn) return;
+      const scrollTarget = btn.getAttribute("data-scroll");
+      if (scrollTarget){
+        const el = document.getElementById(scrollTarget);
+        if (el) el.scrollIntoView({behavior:"smooth", block:"start"});
+        return;
+      }
+      const stage = btn.getAttribute("data-stage");
+      if (!stage) return;
+      elStageTabs.querySelectorAll(".stage-tab").forEach(b => b.classList.toggle("active", b === btn));
+      elStagePanels.forEach(panel => {
+        panel.classList.toggle("active", panel.id === `stage-${stage}`);
+      });
+    });
+  }
 
   refresh();
   setInterval(refresh, REFRESH_MS);
