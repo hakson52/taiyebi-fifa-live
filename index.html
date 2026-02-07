@@ -631,6 +631,13 @@
       margin-top:14px;color:var(--muted);font-size:12px;
       display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap
     }
+    .copyright{
+      margin-top:18px;
+      text-align:center;
+      color:var(--muted);
+      font-size:12px;
+      letter-spacing:.3px;
+    }
     a{color:var(--accent);text-decoration:none}
     a:hover{color:#F5DCA0}
 
@@ -925,6 +932,7 @@
         </div>
       </div>
     </div>
+    <div class="copyright">© 2026 Fresco Cup. All rights reserved by Toloba - Taiyebi Mohalla Pune. Developed by <a href="https://www.linkedin.com/in/hamzarampurawala/" target="_blank">Hamza R.</a></div>
   </div>
 
   <div class="popup-overlay" id="finalPopup">
@@ -991,6 +999,10 @@
       get(r, `Penalty ${key}`) ||
       get(r, `Penalties ${key}`)
     );
+  }
+  function setupNumFrom(value){
+    const digits = String(value ?? "").match(/\d+/);
+    return digits ? parseInt(digits[0], 10) : NaN;
   }
 
   async function fetchSheet(name){
@@ -1296,10 +1308,22 @@
 
   function renderNowPlaying(matches, round){
     const setups = ["Setup 1","Setup 2","Setup 3","Setup 4"];
-    const roundMatches = matches.filter(m => String(get(m,"Round")) === String(round));
+    const roundMatches = matches.filter(m => safeStr(get(m,"Round")) === String(round));
 
     const html = setups.map((s, index)=>{
-      const m = roundMatches.find(x => normKey(get(x,"Setup")) === normKey(s));
+      const sNum = setupNumFrom(s);
+      const m = roundMatches.find(x => {
+        const setupVal = safeStr(get(x,"Setup"));
+        const setupNum = setupNumFrom(setupVal);
+        const gameNum = setupNumFrom(get(x,"Game In Round"));
+        const consoleNum = setupNumFrom(get(x,"Console"));
+        return (
+          normKey(setupVal) === normKey(s) ||
+          (Number.isFinite(sNum) && sNum === setupNum) ||
+          (Number.isFinite(sNum) && sNum === gameNum) ||
+          (Number.isFinite(sNum) && sNum === consoleNum)
+        );
+      });
       if (!m){
         return cardMatch({setup:s, round, a:"—", b:"—", ga:"", gb:"", isScoreUpdated: false, playerAScored: false, playerBScored: false});
       }
